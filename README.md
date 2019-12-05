@@ -1,3 +1,5 @@
+# Deadlock
+
 *Deadlock* is a static analyser for the detection of potential deadlocks in C programs implemented as a plugin of [Frama-C](http://frama-c.com/).
 
 The core algorithm is based on an existing tool [RacerX](https://web.stanford.edu/~engler/racerx-sosp03.pdf). The so-called lockset analysis traverses control flow graph and computes the set of locks held at any program point. When lock b is acquired with current lockset already containing lock a, dependency a -> b is added to lockgraph. Each cycle in this graph is then reported as a potential deadlock.
