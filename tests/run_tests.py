@@ -145,7 +145,7 @@ def test_simple_dl3():
 
 @test
 def test_simple_dl4():
-    test = Test(simple_dl_path, "dl_fn_call.c")
+    test = Test(simple_dl_path, "dl_fn_calls.c")
     result = test.run()
     
     result.assert_has_deadlock()
@@ -289,7 +289,7 @@ def test_retval4():
 
 @test
 def test_retval5():
-    test = Test(retval_path, "dl_retval_bottom.c")
+    test = Test(retval_path, "dl_retval_nested_calls.c")
     result = test.run()
 
     result.assert_has_deadlock()
@@ -342,6 +342,7 @@ def run_retval_heuristic():
 def run_lockset_analysis():
     print("Lockset analysis:")
     #test_lockset_analysis1()
+
 
 run_simple_dl_tests()
 run_lockset_analysis()
