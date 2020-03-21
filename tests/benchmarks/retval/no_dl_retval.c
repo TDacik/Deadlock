@@ -11,10 +11,7 @@ int f()
     if ((err1 = pthread_mutex_lock(&lock1)) != 0)
         return -1;
     
-    int err2;
-    if ((err2 = pthread_mutex_unlock(&lock1)) != 0)
-        return -1;
-
+    pthread_mutex_unlock(&lock1);
     return 0;
 
 }
@@ -26,7 +23,7 @@ void *thread1(void *v)
     pthread_mutex_unlock(&lock1);
     pthread_mutex_unlock(&lock2);
 
-	return NULL;
+    return NULL;
 }
 
 int main(int argc, char **argv)

@@ -9,20 +9,15 @@ int f()
 {
     int retval = 0;
     int err1;
-    if (!(err1 = pthread_mutex_lock(&lock1)))
+    if ((err1 = pthread_mutex_lock(&lock1)) != 0)
     {
         retval = -1;
         goto return_label;
     }
     
-    int err2;
-    if (!(err2 = pthread_mutex_unlock(&lock1)))
-    {
-        retval = -1;
-        goto return_label;
-    }
+    pthread_mutex_unlock(&lock1);
 
-return_label:
+return_label: 
     return retval;
 }
 
@@ -33,7 +28,7 @@ void *thread1(void *v)
     pthread_mutex_unlock(&lock1);
     pthread_mutex_unlock(&lock2);
 
-	return NULL;
+    return NULL;
 }
 
 int main(int argc, char **argv)

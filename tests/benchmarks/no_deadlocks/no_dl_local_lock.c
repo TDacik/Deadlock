@@ -15,7 +15,7 @@ void *thread1(void *v)
     pthread_mutex_unlock(&local_lock);
 
     pthread_mutex_destroy(&local_lock);
-	return NULL;
+    return NULL;
 }
 
 void *thread2(void *v)
@@ -29,7 +29,7 @@ void *thread2(void *v)
     pthread_mutex_unlock(&global_lock);
 
     pthread_mutex_destroy(&local_lock);
-	return NULL;
+    return NULL;
 }
 
 int main(int argc, char **argv)

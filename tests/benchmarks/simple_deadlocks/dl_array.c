@@ -11,7 +11,7 @@ void *thread1(void *v)
     pthread_mutex_unlock(&locks[1]);
     pthread_mutex_unlock(&locks[0]);
 
-	return NULL;
+    return NULL;
 }
 
 void *thread2(void *v)
@@ -21,7 +21,7 @@ void *thread2(void *v)
     pthread_mutex_unlock(&locks[0]);
     pthread_mutex_unlock(&locks[1]);
 
-	return NULL;
+    return NULL;
 }
 
 int main(int argc, char **argv)

@@ -19,6 +19,7 @@ void *thread1(void *v)
 {
     pthread_t thread;
     pthread_create(&thread, NULL, thread3, NULL);
+    
     return NULL;
 }
 
@@ -42,5 +43,5 @@ int main()
     pthread_join(threads[0], NULL);
     pthread_join(threads[1], NULL);
 
-	return 0;
+    return 0;
 }

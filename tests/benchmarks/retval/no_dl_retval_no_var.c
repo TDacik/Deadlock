@@ -7,12 +7,10 @@ pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
 int f()
 {
-    if (!pthread_mutex_lock(&lock1))
-        return -1;
-    
-    if (!pthread_mutex_unlock(&lock1))
+    if (pthread_mutex_lock(&lock1) != 0)
         return -1;
 
+    pthread_mutex_unlock(&lock1);
     return 0;
 }
 
@@ -23,7 +21,7 @@ void *thread1(void *v)
     pthread_mutex_unlock(&lock1);
     pthread_mutex_unlock(&lock2);
 
-	return NULL;
+    return NULL;
 }
 
 int main(int argc, char **argv)

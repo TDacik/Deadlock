@@ -2,14 +2,14 @@
 #include <stdio.h>
 #include <unistd.h>
 
-struct s_with_lock
+struct s_with_locks
 {
     int data;
     pthread_mutex_t lock1;
     pthread_mutex_t lock2;
 };
 
-struct s_with_lock s;
+struct s_with_locks s;
 
 void *thread1(void *v)
 {
@@ -18,7 +18,7 @@ void *thread1(void *v)
     pthread_mutex_unlock(&s.lock2);
     pthread_mutex_unlock(&s.lock1);
 
-	return NULL;
+    return NULL;
 }
 
 void *thread2(void *v)
@@ -28,7 +28,7 @@ void *thread2(void *v)
     pthread_mutex_unlock(&s.lock1);
     pthread_mutex_unlock(&s.lock2);
 
-	return NULL;
+    return NULL;
 }
 
 int main(int argc, char **argv)

@@ -13,7 +13,7 @@ void *thread1(void *v)
     pthread_mutex_unlock(&lock2);
     pthread_mutex_unlock(&lock1);
 
-	return NULL;
+    return NULL;
 }
 
 void *thread2(void *v)
@@ -23,7 +23,7 @@ void *thread2(void *v)
     pthread_mutex_unlock(&lock3);
     pthread_mutex_unlock(&lock2);
 
-	return NULL;
+    return NULL;
 }
 
 void *thread3(void *v)
