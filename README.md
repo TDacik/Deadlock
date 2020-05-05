@@ -1,5 +1,7 @@
 # Deadlock
 
+<img align="right" width="200" src="http://excel.fit.vutbr.cz/submissions/2020/012/12_nahled.png">
+
 *Deadlock* is a static analyser for the detection of potential deadlocks in C programs implemented as a plugin of [Frama-C](http://frama-c.com/).
 
 The core algorithm is based on an existing tool [RacerX](https://web.stanford.edu/~engler/racerx-sosp03.pdf). The so-called lockset analysis traverses control flow graph and computes the set of locks held at any program point. When lock b is acquired with current lockset already containing lock a, dependency a -> b is added to lockgraph. Each cycle in this graph is then reported as a potential deadlock.
@@ -68,6 +70,9 @@ The plugin can be run by command:
 ``` 
 frama-c -deadlock *source_file.c* 
 ``` 
+
+## Related papers
+Dacík T. [Static Deadlock Detection in Frama-C](http://excel.fit.vutbr.cz/submissions/2020/012/12.pdf) In *Proceedings of Excel@FIT'20*. Brno University of Technology, Faculty of Information Technology. 2020
 
 ## Contact
 If you have any questions, do not hesitate to contact the tool/method authors:
