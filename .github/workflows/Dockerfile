@@ -3,7 +3,6 @@ FROM framac/frama-c:23.0
 RUN git clone https://github.com/TDacik/Deadlock
 RUN opam init
 RUN eval $(opam env)
-RUN opam update -y
 RUN opam install -y ounit2
 RUN opam install -y containers
 
