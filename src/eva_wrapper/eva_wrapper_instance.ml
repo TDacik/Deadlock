@@ -99,12 +99,6 @@ let stmt_reads stmt =
   let kf = Kernel_function.find_englobing_kf stmt in
   let zone_kf_all = !Db.Inputs.get_internal kf in
   let zone_kf_ext = !Db.Inputs.get_external kf in
-  Deadlock_options.Self.result "\n\n{|stmt:%a \n S:%a\n I:%a\n E:%a\n |}"
-    Printer.pp_stmt stmt
-    Zone.pretty zone
-    Zone.pretty zone_kf_all
-    Zone.pretty zone_kf_ext
-    ;
   zone
 
 let stmt_writes stmt = 
@@ -112,12 +106,6 @@ let stmt_writes stmt =
   let kf = Kernel_function.find_englobing_kf stmt in
   let zone_kf_all = !Db.Outputs.get_internal kf in
   let zone_kf_ext = !Db.Outputs.get_external kf in
-  Deadlock_options.Self.result "\n\n{|stmt:%a \n S:%a\n I:%a\n E:%a\n |}"
-    Printer.pp_stmt stmt
-    Zone.pretty zone
-    Zone.pretty zone_kf_all
-    Zone.pretty zone_kf_ext
-    ;
   zone
   
 let inputs fn = 
