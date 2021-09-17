@@ -1,3 +1,11 @@
+//# Deadlock: true
+//# Lockgraph:
+//#   - s1.lock -> s2.lock
+//#   - s2.lock -> s1.lock
+
+// Structures with multiple fields are not supported without EVA
+//# With-eva-only: true
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

@@ -1,3 +1,12 @@
+//# Deadlock: true
+//# Nb_deadlocks: 2
+//# Lockgraph:
+//#   - lock1 -> lock2
+//#   - lock2 -> lock1
+//#   - lock3 -> lock4
+//#   - lock4 -> lock5
+//#   - lock5 -> lock3
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

@@ -1,3 +1,11 @@
+//# Deadlock: true
+//# Lockgraph:
+//#   - locks[0] -> locks[1]
+//#   - locks[1] -> locks[0]
+
+// Arrays are not supported without EVA
+//# With-eva-only: true
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

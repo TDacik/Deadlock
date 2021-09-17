@@ -1,3 +1,9 @@
+//# Deadlock: true
+//# Lockgraph:
+//#   - s1.lock -> s2.lock
+//#   - s2.lock -> s1.lock
+
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

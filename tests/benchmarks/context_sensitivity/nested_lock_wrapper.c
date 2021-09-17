@@ -1,3 +1,14 @@
+//# Deadlock: false
+//# Lockgraph:
+//#   - lock1 -> lock2
+
+//# Context-sensitive-functions:
+//#   - lock_wrapper1
+//#   - lock_wrapper2
+//#   - lock_wrapper3
+//#   - lock_wrapper4
+//#   - unlock_wrapper
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -5,24 +16,24 @@
 pthread_mutex_t lock1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
-void lock_wrapper1(pthread_mutex_t *lock)
+void lock_wrapper1(pthread_mutex_t *lockA)
 {
-    pthread_mutex_lock(lock);
+    pthread_mutex_lock(lockA);
 }
 
-void lock_wrapper2(pthread_mutex_t *lock)
+void lock_wrapper2(pthread_mutex_t *lockB)
 {
-    lock_wrapper1(lock);
+    lock_wrapper1(lockB);
 }
 
-void lock_wrapper3(pthread_mutex_t *lock)
+void lock_wrapper3(pthread_mutex_t *lockC)
 {
-    lock_wrapper2(lock);
+    lock_wrapper2(lockC);
 }
 
-void lock_wrapper4(pthread_mutex_t *lock)
+void lock_wrapper4(pthread_mutex_t *lockD)
 {
-    lock_wrapper3(lock);
+    lock_wrapper3(lockD);
 }
 
 void unlock_wrapper(pthread_mutex_t *lock)

@@ -1,3 +1,8 @@
+//# Deadlock: true
+//# Lockgraph:
+//#   - lock1 -> lock2
+//#   - lock2 -> lock1
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -5,7 +10,7 @@
 pthread_mutex_t lock1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
-void f()
+void func()
 {
     pthread_mutex_lock(&lock2);
     pthread_mutex_unlock(&lock2);
@@ -15,7 +20,7 @@ void f()
 void *thread1(void *v)
 {
     pthread_mutex_lock(&lock1);
-    f();
+    func();
     pthread_mutex_unlock(&lock1);
 	
     return NULL;

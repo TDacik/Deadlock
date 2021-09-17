@@ -1,3 +1,11 @@
+//# Deadlock: false
+//# Lockgraph:
+//#   - lock1 -> lock2
+
+//# Context-sensitive-functions:
+//#   - lock_wrapper
+//#   - unlock_wrapper
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

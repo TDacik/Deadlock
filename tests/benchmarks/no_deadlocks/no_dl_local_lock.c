@@ -1,3 +1,8 @@
+//# Deadlock: False
+//# Lockgraph:
+//#   - local_lock -> global_lock
+//#   - global_lock -> local_lock
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

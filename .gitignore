@@ -2,6 +2,8 @@
 *.cmo
 *.cma
 *.cmi
+*.cmt
+*.cmti
 *.a
 *.o
 *.cmx
@@ -21,3 +23,27 @@ setup.log
 
 # Merlin configuring file for Vim and Emacs
 .merlin
+
+# Frama-c generated files
+Deadlock.check_mli_exists
+META.frama-c-deadlock
+top
+gui
+
+# Documentation
+doc
+todos
+
+# Vim
+*.swp
+*.swo
+
+# Python
+__pycache__
+
+# Test results
+tests/results
+experiments
+
+# Misc
+models/svcomp
