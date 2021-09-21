@@ -13,7 +13,7 @@ module No_refinement (State : STATE) (Results : RESULTS) = struct
   type state = State.t
   type results = Results.t
 
-  let condition _ _ _ = false
+  let condition _ _ _ _ = false
 
   (* Folowing functions are never called *)
   let refine_entry_state _ _ = failwith "Internal error"

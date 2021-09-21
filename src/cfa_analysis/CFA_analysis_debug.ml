@@ -37,13 +37,13 @@ module Make (Printers : PRINTERS) = struct
   let vertex_cache_hit () = Debug.debug "Vertex cache hit"
   
   let refinement_start fn states callstack = 
-    Debug.debug ~level:3 ~dkey:dk_cfa "Starting refinement of %a" Printer.pp_fundec fn;
+    Debug.debug ~level:2 ~dkey:dk_cfa "Starting refinement of %a" Printer.pp_fundec fn;
     Debug.debug ~level:3 ~dkey:dk_cfa " callstack:\n%a" Callstack.pp callstack;
     Debug.debug ~level:3 ~dkey:dk_cfa " states: \n%a" pp_states states
   
   let refinement_finished fn states status =
     let status_str = if status then "Succesfull" else "Unsuccesfull" in
-    Debug.debug ~level:3 ~dkey:dk_cfa "%s refinement of %a" status_str Printer.pp_fundec fn;
+    Debug.debug ~level:2 ~dkey:dk_cfa "%s refinement of %a" status_str Printer.pp_fundec fn;
     Debug.debug ~level:3 ~dkey:dk_cfa " states: \n%a" pp_states states
    
   let trav_start () = ()
@@ -97,7 +97,7 @@ module Make (Printers : PRINTERS) = struct
     Debug.debug ~level:3 ~dkey:dk_cfa  "Instr: %s %a" label pp_instr instr
 
   let debug_stmt stmt state states =
-    Debug.debug ~level:3 ~dkey:dk_cfa  "Stmt: %a" Printer.pp_stmt stmt;
+    Debug.debug ~level:3 ~dkey:dk_cfa  "Stmt: %a" Print_utils.pp_loc stmt;
     Debug.debug ~level:3 ~dkey:dk_cfa " %a -> %a" pp_state state pp_states states
 
   let debug_fn_enter kf state =
@@ -114,7 +114,7 @@ module Make (Printers : PRINTERS) = struct
     else ();
     *)
 
-    Debug.debug ~level:3 ~dkey:dk_cfa "Entering fn: %a" pp_func fn;
+    Debug.debug ~level:2 ~dkey:dk_cfa "Entering fn: %a" pp_func fn;
     Debug.debug ~level:3 ~dkey:dk_cfa " state: %a" pp_state state
 
   let debug_cache_hit fn states results =
