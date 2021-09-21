@@ -29,9 +29,16 @@ let find_englobing_fn stmt =
   Kernel_function.find_englobing_kf stmt
   |> Kernel_function.get_definition
 
-let call_params stmt = match stmt.skind with
-  | Instr instr -> begin match instr with
+let call_params stmt = 
+  match stmt.skind with
+  | Instr instr -> 
+    begin match instr with
       | Call (_, _, params, _) -> params
+      | Local_init (_, init, _) -> 
+        begin match init with
+          | ConsInit (_, params, _) -> params
+          | _ -> failwith "Not a call stmt"
+        end
       | _ -> failwith "Not a call stmt"
     end
   | _ -> failwith "Not a call call"
