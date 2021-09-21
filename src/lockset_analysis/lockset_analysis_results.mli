@@ -25,6 +25,10 @@ module Function_status : sig
   
   val is_imprecise : t -> Fundec.t -> bool
 
+  val pp_status : Format.formatter -> status -> unit
+  
+  val pp : Format.formatter -> t -> unit
+
 end
 
 type t = {

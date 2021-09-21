@@ -164,6 +164,10 @@ module Callstack = struct
     | Then_nondet -> "taking true branch nondeterministically"
     | Else_nondet -> "taking false branch nondeterministically"
 
+  let event_is_guard = function
+    | Guard _ -> true
+    | _ -> false
+
   let event_to_string prefix = function
     | Call (stmt, fundec) ->
       Format.asprintf "%sCall of %a (%a)"
@@ -190,7 +194,11 @@ module Callstack = struct
 
   let rec to_string_aux prefix = function
     | [] -> ""
-    | event :: tail -> event_to_string prefix event ^ "\n" ^ to_string_aux prefix tail
+    | event :: tail ->
+      if not @@ String.equal (Deadlock_options.Callstack_mode.get ()) "branching" 
+         && event_is_guard event
+      then to_string_aux prefix tail
+      else event_to_string prefix event ^ "\n" ^ to_string_aux prefix tail
 
   let to_string = function 
     | [] -> "[]"

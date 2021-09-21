@@ -45,7 +45,7 @@ module State = struct
     else Format.fprintf fmt "%a" Cvalue.Model.pretty context
 
   let pp fmt state = 
-    Format.fprintf fmt "lockset: %a,  context: %a" 
+    Format.fprintf fmt "  lockset: %a\n  context: %a\n" 
       Lockset.pp state.lockset
       pp_context state.context
 
@@ -55,13 +55,7 @@ module State = struct
   let compare s1 s2 =
     let res1 = Lockset.compare s1.lockset s2.lockset in
     if res1 <> 0 then res1
-    else
-      let res2 = Function_status.compare s1.function_status s2.function_status in
-      if res2 <> 0 then res2
-      else
-        let res3 = Bool.compare s1.imprecise s2.imprecise in
-        if res3 <> 0 then res3
-        else Cvalue.Model.compare s1.context s2.context
+    else Cvalue.Model.compare s1.context s2.context
 
   let join s1 s2 =
     assert (are_joinable s1 s2);
@@ -110,6 +104,9 @@ open Results
 let locksets (states : State.t list) =
   List.fold_left (fun acc s -> LocksetSet.add s.lockset acc) LocksetSet.empty states
 
+let is_any_imprecise (states : State.t list) =
+  List.exists (fun s -> s.imprecise) states
+
 let function_status (states : State.t list) =
   List.fold_left (fun acc (s : State.t) -> Function_status.union s.function_status acc) 
     Function_status.empty
@@ -151,6 +148,7 @@ let can_be_refined callstack fn states results =
 let refine_condition callstack fn states results =
   should_be_refined fn states results
   && can_be_refined callstack fn states results
+  && not @@ is_any_imprecise states
 
 (* Refine function that is sensitive to input lock parameter *)
 let refine_lock_params callstack params = 
@@ -194,7 +192,6 @@ let post_refine_universal fn state =
                 |> List.map Base.of_varinfo
   in
   let new_context = List.fold_right Cvalue.Model.remove_base formals context in
-  (*TODO: *)
   let new_context = Cvalue.Model.filter_base (fun b -> Base.is_any_formal_or_local b)
       new_context in
   {state with context = new_context}
@@ -204,10 +201,8 @@ let post_refine callstack state =
   post_refine_universal fn state
 
 (* If refiment fail, mark that function is imprecise to avoid repeated refiments *)
-(* TODO: does repeated refinement make a sense e.g. in context of another thread? *)
 let post_failed_refine callstack old_states new_states _ new_results =
-  let fn = Callstack.top_call callstack in
-  (new_states, new_results)
+  (List.map (fun s -> {s with imprecise = true}) new_states, new_results)
 
 (* ==== Auxiliary function for lockset analysis ==== *)
 
@@ -288,8 +283,8 @@ let possible_locks_from_expr stmt expr state callstack results =
   List.map
     (fun (varinfo, offset) ->
        let name = match offset with
-         | 0 -> Format.asprintf "%a" Printer.pp_varinfo varinfo 
-         | offset -> Format.asprintf "%a[%d]" Printer.pp_varinfo varinfo offset in
+         | 0 -> Format.asprintf "Lock of %a" Printer.pp_varinfo varinfo 
+         | offset -> Format.asprintf "Lock of %a[%d]" Printer.pp_varinfo varinfo offset in
 
        let trace = Callstack.push_action stmt name callstack in
        Lock.create varinfo offset trace

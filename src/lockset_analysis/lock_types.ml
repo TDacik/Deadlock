@@ -61,19 +61,23 @@ module Lock = struct
 
   let update_trace lock new_trace = {lock with trace = new_trace}
   
-  let pp fmt lock = 
-    (*
-    let singleton_itv = (AI.Int.of_int lock.offset, AI.Int.of_int lock.offset) in
-    let singleton_interval = Int_Intervals.inject_itv singleton_itv in  
-    Format.fprintf fmt "%a%a"
-      Varinfo.pretty lock.var
-      (Int_Intervals.pretty_typ (Some lock.var.vtype)) singleton_interval
-    *)
-    match lock.offset with
-    | 0 -> Format.fprintf fmt "%a" Printer.pp_varinfo lock.var
-    | i -> Format.fprintf fmt "%a[%d]" 
-             Printer.pp_varinfo lock.var
-             lock.offset
+  let pp fmt lock =
+    match Kernel_function.find_defining_kf lock.var with
+    | Some kf ->
+      begin match lock.offset with
+        | 0 -> Format.fprintf fmt "%a(%a)" Printer.pp_varinfo lock.var Kernel_function.pretty kf
+        | i -> Format.fprintf fmt "%a[%d](%a)" 
+                 Printer.pp_varinfo lock.var
+                 lock.offset
+                 Kernel_function.pretty kf
+      end
+    | None ->
+      begin match lock.offset with
+        | 0 -> Format.fprintf fmt "%a" Printer.pp_varinfo lock.var
+        | i -> Format.fprintf fmt "%a[%d]" 
+                 Printer.pp_varinfo lock.var
+                 lock.offset
+      end
   
   let to_string lock = Format.asprintf "%a" pp lock
 

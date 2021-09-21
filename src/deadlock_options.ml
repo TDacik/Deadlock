@@ -122,3 +122,16 @@ module Ignore_self_deadlocks = Self.True
       let help = "Ignore deadlocks caused by a single thread on a \
                   single lock by double locking it"
     end)
+
+module Callstack_mode = Self.String
+    (struct
+      let option_name = "-callstack-mode"
+      let arg_name = "none | calls | branching"
+      let help = "How to print callstacks"
+      let default = "calls"
+    end)
+
+let () = Callstack_mode.add_update_hook 
+    (fun _ v -> if not @@ List.mem v ["none"; "calls"; "branching"] then 
+        Kernel.abort "Option -dl-callstack-mode must be 'none', 'calls' or 'branching'"
+    )

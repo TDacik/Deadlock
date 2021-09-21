@@ -46,6 +46,8 @@ module Make (Analysis : ANALYSIS) = struct
       let join_state = S.fold State.join joinable state in
       S.add join_state non_joinable
 
+    let cardinal = S.cardinal
+
     let to_list set = S.fold List.cons set []
 
     let from_list l = List.fold_right S.add l S.empty
@@ -77,7 +79,8 @@ module Make (Analysis : ANALYSIS) = struct
     module M = Map.Make
         (struct
           type t = CFA.vertex
-          let compare = Pervasives.compare
+          let compare (v1 : CFA.vertex) (v2 : CFA.vertex) = 
+            Int.compare v1.vertex_key v2.vertex_key
         end)
 
     let cache = ref (Stack.create ())
@@ -87,8 +90,6 @@ module Make (Analysis : ANALYSIS) = struct
     let pop () = let _ = Stack.pop !cache in ()
 
     let clean () = cache := (Stack.create ())
-
-    
 
     let find_or_empty vertex =
       try M.find vertex (Stack.top !cache)
@@ -171,7 +172,7 @@ module Make (Analysis : ANALYSIS) = struct
   and traverse_vertex callstack g (vertex : CFA.G.V.t) state cache =
     let fn = Callstack.top_call_fn callstack in
     let cached_states = Vertex_cache.find_or_empty vertex in
-    
+
     if States.mem state cached_states then
       Control.return cache
     

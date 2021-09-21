@@ -29,8 +29,7 @@ let find_englobing_fn stmt =
   Kernel_function.find_englobing_kf stmt
   |> Kernel_function.get_definition
 
-let call_params stmt = 
-  match stmt.skind with
+let call_params stmt = match stmt.skind with
   | Instr instr -> 
     begin match instr with
       | Call (_, _, params, _) -> params

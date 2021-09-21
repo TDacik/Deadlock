@@ -70,6 +70,16 @@ module Function_status = struct
     | Refined (_, _) -> true
     | _ -> false
 
+  let pp_status fmt status = match status with
+    | Normal -> Format.fprintf fmt "NORMAL"
+    | Refined _ -> Format.fprintf fmt "REFINED"
+    | Imprecise -> Format.fprintf fmt "IMPRECISE"
+
+  let pp fmt = M.iter (fun fn status -> 
+      Format.fprintf fmt "%a -> %a"
+        Printer.pp_fundec fn
+        pp_status status
+    )
 end
 
 type t = {
