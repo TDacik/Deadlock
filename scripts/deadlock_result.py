@@ -49,7 +49,6 @@ class DeadlockResult():
 
     @property
     def return_code(self):
-        print(self._data)
         return self.__execution_info["Return code"]
 
     @property
