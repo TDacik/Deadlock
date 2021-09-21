@@ -28,10 +28,11 @@ module Results = Lockset_analysis.Results
 let empty_table () = GPack.table ~columns:1 ()
 
 let empty_stmt_table () =
-  let table = GPack.table ~columns:4 () in
-  table#attach ~left:0 ~top:0 ~xpadding:12 (GMisc.label ~text:"Entry lockset" ())#coerce;
-  table#attach ~left:1 ~top:0 ~xpadding:12 (GMisc.label ~text:"Context" ())#coerce;
-  table#attach ~left:2 ~top:0 ~xpadding:12 (GMisc.label ~text:"Exit locksets" ())#coerce;
+  let table = GPack.table ~columns:5 () in
+  table#attach ~left:0 ~top:0 ~xpadding:12 (GMisc.label ~text:"Thread" ())#coerce;
+  table#attach ~left:1 ~top:0 ~xpadding:12 (GMisc.label ~text:"Entry lockset" ())#coerce;
+  table#attach ~left:2 ~top:0 ~xpadding:12 (GMisc.label ~text:"Context" ())#coerce;
+  table#attach ~left:3 ~top:0 ~xpadding:12 (GMisc.label ~text:"Exit locksets" ())#coerce;
   table
 
 let lockset_info = ref None
@@ -43,38 +44,6 @@ let get_results () = match !Deadlock_main._results with
 let get_thread_graph () = match !Deadlock_main._thread_graph with
   | Some g -> g
   | None -> failwith "Thread analysis was not computed"
-
-
-(** Statement summary *)
-let table_stmt results stmt =
-  let summaries = Results.summaries_of_stmt results stmt in
-  let table = empty_stmt_table () in
-  if Stmt_summaries.cardinal summaries = 0 then
-    table#attach 
-      ~left:0 
-      ~top:1 
-      (GMisc.label 
-         ~text:"This statement was not reached during lockset analysis." 
-         ()
-      )#coerce;
-
-  let _ = Stmt_summaries.fold
-      (fun (stmt, (_, ls, context)) lss row ->
-         let ls_str = Format.asprintf "%a" Lockset.pp ls in
-         let lss_str = Format.asprintf "%a" LocksetSet.pp lss in
-         let context_str = Format.asprintf "%a" Cvalue.Model.pretty context in
-         table#attach ~left:0 ~top:row (GMisc.label ~text:ls_str ())#coerce;
-         table#attach ~left:1 ~top:row (GMisc.label ~text:context_str ())#coerce;
-         table#attach ~left:2 ~top:row (GMisc.label ~text:lss_str ())#coerce;
-         row + 1
-      ) summaries 1
-  in table
-
-let show_lockgraph_fn lockgraph main_ui () =
-  Dgraph_helper.graph_window_through_dot 
-    ~parent: main_ui#main_window
-    ~title:"Lockgraph" 
-    (fun fmt -> Lockgraph_dot.fprint_graph fmt lockgraph)
 
 let state_button main_ui (table : GPack.table) top state =
   if Gui_utils.state_too_long state then
@@ -104,6 +73,38 @@ let thread_button main_ui (table : GPack.table) top thread =
   let callback = Gui_utils.text_window main_ui#main_window label (text^text3) in 
   ignore @@ button#connect#clicked ~callback;
   table#attach ~left:0 ~top button#coerce
+
+(** Statement summary *)
+let table_stmt main_ui results stmt =
+  let summaries = Results.summaries_of_stmt results stmt in
+  let table = empty_stmt_table () in
+  if Stmt_summaries.cardinal summaries = 0 then
+    table#attach 
+      ~left:0 
+      ~top:1 
+      (GMisc.label 
+         ~text:"This statement was not reached during lockset analysis." 
+         ()
+      )#coerce;
+
+  let _ = Stmt_summaries.fold
+      (fun (stmt, (thread, ls, context)) lss row ->
+         let ls_str = Format.asprintf "%a" Lockset.pp ls in
+         let lss_str = Format.asprintf "%a" LocksetSet.pp lss in
+         let context_str = Format.asprintf "%a" Cvalue.Model.pretty context in
+         thread_button main_ui table row thread;
+         table#attach ~left:1 ~top:row (GMisc.label ~text:ls_str ())#coerce;
+         table#attach ~left:2 ~top:row (GMisc.label ~text:context_str ())#coerce;
+         table#attach ~left:3 ~top:row (GMisc.label ~text:lss_str ())#coerce;
+         row + 1
+      ) summaries 1
+  in table
+
+let show_lockgraph_fn lockgraph main_ui () =
+  Dgraph_helper.graph_window_through_dot 
+    ~parent: main_ui#main_window
+    ~title:"Lockgraph" 
+    (fun fmt -> Lockgraph_dot.fprint_graph fmt lockgraph)
 
 let table_fn_summaries main_ui results varinfo =
   try
@@ -155,7 +156,7 @@ let on_select menu (main_ui : Design.main_window_extension_points) ~button selec
   let notebook = main_ui#lower_notebook in
   let table = match selected with
     (* Statements *)
-    | PStmt (_, stmt) | PStmtStart (_, stmt) -> table_stmt results stmt
+    | PStmt (_, stmt) | PStmtStart (_, stmt) -> table_stmt main_ui results stmt
 
     (* Declaration and definition of functior or variable *)
     | PVDecl (_, _, varinfo) -> 
