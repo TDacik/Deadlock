@@ -54,7 +54,7 @@ module type REFINEMENT = sig
     (** Refinement of analysis. In all following functions, current function is located
         on the top of the callstack. *)
 
-    val condition : Cil_types.fundec -> state list -> results -> bool
+    val condition : Callstack.t -> Cil_types.fundec -> state list -> results -> bool
     (** After function was analysed resulting to (states, results), should is analysis be refined? *)
     
     val refine_entry_state : Callstack.t -> state -> state

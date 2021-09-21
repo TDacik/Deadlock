@@ -133,10 +133,24 @@ let is_state_imprecise fn state = Lockset.exists Lock.is_weak state.lockset
 (* Single function will probably not introduce a cycle *)
 let are_results_imprecise fn results = Lockgraph.has_cycle results.lockgraph
 
-let refine_condition fn states results =
+let should_be_refined fn states results =
   List.exists (is_state_imprecise fn) states
   || are_results_imprecise fn results
   || List.length states > 1
+
+let can_be_refined callstack fn states results =
+  let fn, callsite = Callstack.top_call callstack in
+  (* Refinement for threads is not implemented yet *)
+  if Stmt.equal Cil.dummyStmt callsite then false
+  else  
+    let lock_params = Concurrency_model.fn_lock_params fn in
+    let path_params, _ = extract_pure_inputs fn callsite in
+    lock_params <> [] 
+    || path_params <> []
+
+let refine_condition callstack fn states results =
+  should_be_refined fn states results
+  && can_be_refined callstack fn states results
 
 (* Refine function that is sensitive to input lock parameter *)
 let refine_lock_params callstack params = 
@@ -430,9 +444,9 @@ module Analysis = CFA_analysis.Make
         type state = State.t
         type results = Results.t
         
-        let condition fn states res =
+        let condition callstack fn states res =
           Do_refinement.get ()
-          && refine_condition fn states res
+          && refine_condition callstack fn states res
         
         let refine_entry_state = refine_entry_state
         let post_refine = post_refine
