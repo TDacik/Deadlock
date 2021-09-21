@@ -283,7 +283,7 @@ module CFA_analysis_signatures : sig
     type state
     type results
 
-    val condition : Cil_types.fundec -> state list -> results -> bool
+    val condition : Callstack.t -> Cil_types.fundec -> state list -> results -> bool
     val refine_entry_state : Callstack.t -> state -> state
     val post_refine : Callstack.t -> state -> state
     val post_failed_refine : 

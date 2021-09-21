@@ -105,11 +105,10 @@ let create_calling_context fn callsite =
 
 (* Extract non-locks pure inputs of function at callsite *)
 let extract_pure_inputs fn callsite =
-  let pure_inputs = Eva_wrapper.pure_inputs fn in
   let context = create_calling_context fn callsite in
   let pure_vars =
-    Base.Set.elements pure_inputs               
-    |> List.map Base.to_varinfo  
+    Cvalue.Model.fold (fun b _ acc -> b :: acc) (Option.get @@ lmap_to_map context) []               
+    |> List.map Base.to_varinfo
     |> List.filter (fun v -> not @@ Concurrency_model.is_lock_type_rec v.vtype)
   in
   pure_vars, context

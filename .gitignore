@@ -29,6 +29,7 @@ Deadlock.check_mli_exists
 META.frama-c-deadlock
 top
 gui
+*.frama-c
 
 # Documentation
 doc

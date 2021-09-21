@@ -300,7 +300,7 @@ module Make (Analysis : ANALYSIS) = struct
 
     (* Refinement *)
     let refine_callstack = Callstack.push_call callsite fn callstack in
-    if (Refinement.condition fn (States.to_list states) results
+    if (Refinement.condition refine_callstack fn (States.to_list states) results
         && (not already_refined)
         && Callstack.depth callstack > 1 (* Do not refine threads *)
        )
@@ -309,10 +309,10 @@ module Make (Analysis : ANALYSIS) = struct
        * computed function summaries are dropped *)
       Debug.refinement_start fn states callstack;
       let entry, states_refined, cache_refined, results_refined =
-        traverse_fn_refined fn callsite state (Callstack.pop callstack) cache
+        traverse_fn_refined fn callsite state callstack cache
       in
       (* Refinement condition still hold and refinement was therefore unsuccessful *)
-      if Refinement.condition fn (States.to_list states_refined) results_refined then begin
+      if Refinement.condition refine_callstack fn (States.to_list states_refined) results_refined then begin
         Nb_failed_refinements.inc ();
         Debug.refinement_finished fn states_refined false;
         let states_new = States.to_list states_refined in
@@ -333,10 +333,9 @@ module Make (Analysis : ANALYSIS) = struct
     else (state, states, cache', results)
 
   and traverse_fn_refined fn callsite state callstack cache =
-    let refine_callstack = Callstack.push_call callsite fn callstack in
-    let state = Refinement.refine_entry_state refine_callstack state in
+    let state = Refinement.refine_entry_state callstack state in
     let entry, states, cache, results = analyse_fn ~already_refined:true callstack callsite fn state cache in
-    (entry, States.map (Refinement.post_refine refine_callstack) states, cache, results)
+    (entry, States.map (Refinement.post_refine callstack) states, cache, results)
 
   (** Compute analysis for each thread and join their results *)
   let compute thread_graph =
