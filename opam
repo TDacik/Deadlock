@@ -2,15 +2,14 @@ opam-version: "2.0"
 name: "deadlock"
 version: "1.0"
 synopsis: "Frama-C plugin for deadlock detection"
-maintainer: "Tomáš Dacík"
+maintainer: "Tomáš Dacík <xdacik00@stud.fit.vutbr.cz>"
 authors: [
-    "Tomáš Dacík (xdacik00@stud.fit.vutbr.cz)"
-    "Tomáš Vojnar (vojnar@fit.vutbr.cz)"
+    "Tomáš Dacík <xdacik00@stud.fit.vutbr.cz>"
+    "Tomáš Vojnar <vojnar@fit.vutbr.cz>"
 ]
 license: "MIT"
-homepage: [
-    "https://www.fit.vutbr.cz/research/groups/verifit/tools/sa-plugins/"
-]
+homepage: "https://github.com/TDacik/Deadlock"
+bug-reports: "https://github.com/TDacik/Deadlock/issues"
 
 depends: [
     "frama-c"
@@ -19,8 +18,9 @@ depends: [
 ]
 
 build: [
-    [make]
-    [make "setup"]
+    ["make" "setup"]
+    ["make"]
 ]
 
-install [make "install"]
+install: ["make" "install"]
+
