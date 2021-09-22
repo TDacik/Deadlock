@@ -18,9 +18,10 @@ depends: [
 ]
 
 build: [
-    ["make" "setup"]
-    ["make"]
+    [make]
 ]
 
-install: ["make" "install"]
-
+install: [
+    [make "setup"]
+    [make "install"]
+]
