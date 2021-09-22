@@ -111,7 +111,6 @@ setup:
 
 	# Copy models
 	cp ../models/*.json $(FRAMAC_SHARE)/deadlock
-	cp -r ../models/svcomp $(FRAMAC_SHARE)/deadlock
 
 	# Copy inputs for unit tests
 	cp -r unit_tests/inputs $(FRAMAC_SHARE)/deadlock

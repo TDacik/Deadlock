@@ -60,7 +60,7 @@ The current version is compatible with [Frama-C Vanadium](https://frama-c.com/fc
 After installing Frama-C, clone this repository and run 
 
 ```
-cd src
+cd Deadlock
 make setup
 make
 make install
