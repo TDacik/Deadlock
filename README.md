@@ -66,6 +66,8 @@ make
 make install
 ```
 
+You may also run Deadlock in docker either by using `docker run -it tdacik/deadlock` or by running `make docker` to build an image of the most recent version.  
+
 ## Usage
 The plugin can be run by following command: 
 ``` 
