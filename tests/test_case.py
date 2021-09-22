@@ -59,7 +59,7 @@ class TestCase(DeadlockRunner):
 
         spec = "\n".join(lines)
         self.spec_string = spec
-        self.spec = yaml.safe_load(spec)
+        self.spec = yaml.load(spec, Loader=yaml.SafeLoader)
         
         # Conversion to defaultdict to avoid KeyErrors
         self.spec = defaultdict(lambda: None, self.spec)
