@@ -12,7 +12,9 @@ homepage: "https://github.com/TDacik/Deadlock"
 bug-reports: "https://github.com/TDacik/Deadlock/issues"
 
 depends: [
-    "frama-c"
+    "ocaml" { >= "4.11.0" }
+    "lablgtk3" { >= 3.1.1" }
+    "frama-c" { >= "23.1" }
     "ounit2"
     "containers"
 ]
@@ -25,3 +27,8 @@ install: [
     [make "setup"]
     [make "install"]
 ]
+
+url {
+  src: "https://github.com/TDacik/Deadlock/archive/refs/tags/1.0.tar.gz"
+  checksum: "md5=71e080cb4cef2e76f5b2e4be5fdd72e7"
+}
