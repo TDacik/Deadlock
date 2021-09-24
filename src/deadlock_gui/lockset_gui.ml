@@ -227,14 +227,11 @@ let deadlock_panel main_ui =
   let box = GPack.box `VERTICAL () in
   let button1 = GButton.button ~label:"Show lockgraph" () in
   ignore @@ button1#connect#clicked ~callback:(show_lockgraph main_ui);
-  
   let button2 = GButton.button ~label:"Show thread graph" () in
   ignore @@ button2#connect#clicked ~callback:(show_thread_graph main_ui);
-
+  (* TODO: fix build problems
   let label = GMisc.label ~text:"Active thread" () in
-
-  let liste = GList.liste () ~selection_mode: `SINGLE in
-  
+  let liste = GList.liste () ~selection_mode:`SINGLE in
   let threads = Thread_graph.get_threads (get_thread_graph ()) in
   List.iteri
     (fun i thread ->
@@ -243,11 +240,13 @@ let deadlock_panel main_ui =
       ignore @@ item#connect#select ~callback:(change_thread thread main_ui);
       liste#insert ~pos:i item
     ) threads;
-
+  *)
   (box :> GContainer.container)#add button1#coerce;
   (box :> GContainer.container)#add button2#coerce;
-  (box :> GContainer.container)#add label#coerce;
-  (box :> GContainer.container)#add liste#coerce;
+  (*
+    (box :> GContainer.container)#add label#coerce;
+    (box :> GContainer.container)#add liste#coerce;
+  *)
   box#coerce
 
 let high buffer localizable ~start ~stop =
@@ -256,7 +255,7 @@ let high buffer localizable ~start ~stop =
   match localizable with
   | PStmt (_, stmt) ->
     if Cil_datatype.Stmt.Set.mem stmt (Results.imprecise_lock_stmts results) then
-      let tag = make_tag buffer "deadlock" [`BACKGROUND "red" ] in
+      let tag = make_tag buffer "deadlock" [`BACKGROUND "red"] in
       apply_tag buffer tag start stop
   
   | PVDecl (_, _, varinfo) -> 
