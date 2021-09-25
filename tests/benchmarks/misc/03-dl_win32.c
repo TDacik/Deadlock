@@ -9,7 +9,7 @@
 //#   - thread2 -> thread1
 
 //# Options:
-//#   - dl-conc-model: win32_threads
+//#   - deadlock-conc-model: win32_threads
 
 //# Todo: true
 

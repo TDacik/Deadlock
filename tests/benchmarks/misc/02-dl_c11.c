@@ -9,7 +9,7 @@
 //#   - thread2 -> thread1
 
 //# Options:
-//#   - dl-conc-model: c11_threads
+//#   - deadlock-conc-model: c11_threads
 
 //TODO: mtx is considered to be arithmetic type by CIL
 //# With-eva-only: true 

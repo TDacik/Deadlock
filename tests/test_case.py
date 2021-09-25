@@ -44,7 +44,7 @@ class TestCase(DeadlockRunner):
         return super().prepare_command(json_out)
 
     def setup(self, using_eva):
-        self.set_option("dl-use-eva", using_eva)
+        self.set_option("deadlock-use-eva", using_eva)
         
         with open(self.path) as f:
             lines = []
@@ -68,7 +68,7 @@ class TestCase(DeadlockRunner):
         return self.spec["Todo"]
 
     def is_with_eva_only(self):
-        return self.spec["With-eva-only"] and (not self.options["dl-use-eva"])
+        return self.spec["With-eva-only"] and (not self.options["deadlock-use-eva"])
 
     def exercise(self):
         self.run()

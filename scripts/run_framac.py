@@ -59,8 +59,8 @@ class FramacRunner():
         def option_to_false(option):
             """ Convert option -<plugin>-option to -<plugin>-no-option """
             elems = option.split("-")
-            elems = [elems[0], "no"] + elems[1:]
-            return "-".join(elems)
+            elems = [elems[1], "no"] + elems[2:]
+            return "-" + "-".join(elems)
 
         if value is None:
             assert False

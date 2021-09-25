@@ -9,7 +9,7 @@
 //#   - lock1 -> lock2
 
 //# Options:
-//#   - dl-auto-find-lock-types: true
+//#   - deadlock-auto-find-lock-types: true
 
 #include <stdio.h>
 #include <unistd.h>

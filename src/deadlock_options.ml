@@ -43,7 +43,7 @@ module Enabled = Self.False
 
 module Json_summary_filename = Self.String
     (struct
-      let option_name = "-dl-out-json"
+      let option_name = "-deadlock-out-json"
       let arg_name = "filename"
       let default = ""
       let help = "Store summary of the analysis as json file"
@@ -51,7 +51,7 @@ module Json_summary_filename = Self.String
 
 module Use_EVA = Self.True
     (struct
-      let option_name = "-dl-use-eva"
+      let option_name = "-deadlock-use-eva"
       let help = "Use values computed by eva to represent locks and threads. More \
                   precise for cost of scalability. Otherwise, locks are represented \
                   syntactically (basically as strings)."
@@ -61,25 +61,25 @@ module Use_EVA = Self.True
 
 module Match_syntactic_pairs = Self.True
     (struct
-      let option_name = "-dl-match-syntactic-pairs"
+      let option_name = "-deadlock-match-syntactic-pairs"
       let help = "Assumes that ..."
     end)
 
 module Retvals = Self.False              
     (struct
-      let option_name = "-dl-retvals"
+      let option_name = "-deadlock-retvals"
       let help = "Heuristic to remove locks in branches where locking operations failled."
     end)
 
 module Do_caching = Self.True
     (struct
-      let option_name = "-dl-caching"
+      let option_name = "-deadlock-caching"
       let help = "Perform caching (option \"no\" is experimental)"
     end)
 
 module Do_refinement = Self.True
     (struct
-      let option_name = "-dl-refinement"
+      let option_name = "-deadlock-refinement"
       let help = ""
     end)
 
@@ -89,7 +89,7 @@ module Conc_model_param = Self.String
     (struct
       let default = "pthread"
       let arg_name = "model | path"
-      let option_name = "-dl-conc-model"
+      let option_name = "-deadlock-conc-model"
       let help = "Set concurrency model. Predefined models are pthread (default), c11_threads and win32_threads."
     end)
 
@@ -97,14 +97,14 @@ module Conc_model_param = Self.String
 let () = Parameter_customize.is_invisible ()
 module Auto_find_lock_types = Self.False
     (struct
-      let option_name = "-dl-auto-find-lock-types"
+      let option_name = "-deadlock-auto-find-lock-types"
       let help = "Automatically find lock types in preprocessed programs using the Pthreads API"
     end)
 
 let () = Parameter_customize.is_invisible ()
 module Unit_tests = Self.String
     (struct
-      let option_name = "-dl-unit-tests"
+      let option_name = "-deadlock-unit-tests"
       let arg_name = "test-suite"
       let default = ""
       let help = "Run unit tests"
@@ -112,13 +112,13 @@ module Unit_tests = Self.String
 
 module Do_concurrency_check = Self.True
     (struct
-      let option_name = "-dl-conc-check"
+      let option_name = "-deadlock-conc-check"
       let help = "Perform concurrency check"
     end)
 
 module Ignore_self_deadlocks = Self.True
     (struct
-      let option_name = "-dl-ignore-self-deadlocks"
+      let option_name = "-deadlock-ignore-self-deadlocks"
       let help = "Ignore deadlocks caused by a single thread on a \
                   single lock by double locking it"
     end)
@@ -133,5 +133,5 @@ module Callstack_mode = Self.String
 
 let () = Callstack_mode.add_update_hook 
     (fun _ v -> if not @@ List.mem v ["none"; "calls"; "branching"] then 
-        Kernel.abort "Option -dl-callstack-mode must be 'none', 'calls' or 'branching'"
+        Kernel.abort "Option -deadlock-callstack-mode must be 'none', 'calls' or 'branching'"
     )

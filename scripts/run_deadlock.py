@@ -10,7 +10,7 @@ from deadlock_result import DeadlockResult
 class DeadlockRunner(FramacRunner):
 
     def __init__(self, paths, timeout=None, options=None):
-        super().__init__("deadlock", "dl", paths, timeout, options)
+        super().__init__("deadlock", "deadlock", paths, timeout, options)
 
     def get_result(self, path):
         return DeadlockResult(path)
@@ -38,10 +38,10 @@ class DeadlockRunner(FramacRunner):
 
     def set_heuristics(self):
         options = {
-            "dl-retvals" : True,
-            "dl-auto-find-lock-types" : True,
-            "dl-match-pairs" : True,
-            "dl-conc-check" : False
+            "deadlock-retvals" : True,
+            "deadlock-auto-find-lock-types" : True,
+            "deadlock-match-pairs" : True,
+            "deadlock-conc-check" : False
         }
         self.options = {**self.options, **options}
  
