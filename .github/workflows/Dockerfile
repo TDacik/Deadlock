@@ -11,4 +11,7 @@ RUN make -C Deadlock
 RUN make -C Deadlock install
 
 RUN make -C Deadlock unit-tests
+
+RUN make -C Deadlock
+RUN make -C Deadlock install
 RUN make -C Deadlock test
