@@ -25,12 +25,4 @@ jobs:
       - uses: actions/checkout@v2
     
       - name : install-deadlock
-        run : |
-          echo /home/opam/.opam/4.12/bin >> $GITHUB_PATH
-          docker build .github/workflows/.
-
-      - name : unit-tests
-        run : make unit-tests
-
-      - name : tests
-        run : make test Build and install Deadlock  
+        run : docker build .github/workflows/.
