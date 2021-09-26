@@ -56,6 +56,7 @@ PLUGIN_BASE_CMO = deadlock_options \
 			 thread_analysis/thread_graph \
 			 deadlock_analysis/happend_before \
 			 thread_analysis/thread_analysis \
+			 cfa_analysis/exit_points \
 			 cfa_analysis/CFA_analysis_debug \
 			 cfa_analysis/CFA_analysis \
 			 cfa_analysis/CFA_analysis_utils \

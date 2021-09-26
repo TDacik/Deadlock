@@ -132,6 +132,13 @@ module Make (Analysis : ANALYSIS) = struct
     let analyse_stmt callstack stmt state cache = 
       let states, results = Analysis.analyse_stmt callstack stmt state in
       assert (List.length states > 0);
+
+      let states =
+        if Exit_points.is_exit_point stmt
+        then List.map (fun state -> Analysis.update_return callstack stmt state) states
+        else states
+      in
+
       let states = States.from_list states in
       Debug.debug_stmt stmt state states;
       (states, cache, results)

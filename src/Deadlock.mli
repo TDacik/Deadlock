@@ -314,6 +314,8 @@ module CFA_analysis_signatures : sig
     val analyse_stmt : Callstack.t -> Cil_types.stmt -> State.t -> (State.t list * Results.t)
 
     val analyse_call : Callstack.t -> Cil_types.stmt -> State.t -> call_analysis
+ 
+    val update_return : Callstack.t -> Cil_types.stmt -> State.t -> State.t
 
     val check_guard : Cil_types.stmt -> Cil_types.exp -> State.t -> bool_with_unknown
 

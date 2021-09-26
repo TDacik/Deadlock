@@ -20,6 +20,7 @@ test_suites = {
   "Lockset analysis"    : "lockset_analysis",
   "Context sensitivity" : "context_sensitivity",
   "Path sensitivity"    : "path_sensitivity",
+  "Retval. heuristic"   : "retval",
   "CFA analysis"        : "cfa_analysis",
   "Miscellaneous"       : "misc",
   "Regression"          : "regression",

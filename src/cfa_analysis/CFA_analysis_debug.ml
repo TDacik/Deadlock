@@ -102,8 +102,8 @@ module Make (Printers : PRINTERS) = struct
 
   let debug_fn_enter kf state =
     let fn = Kernel_function.get_definition kf in 
-    
-    (*
+
+    (*    
     let automaton = CFA.get_automaton kf in 
     let fn_name = Format.asprintf "%a.cfa" Printer.pp_fundec fn in
     if true then

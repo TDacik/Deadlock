@@ -1,3 +1,9 @@
+//# Deadlock: false
+//# Lockgraph:
+//#   - lock1 -> lock2
+
+//# With-eva-only: true
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

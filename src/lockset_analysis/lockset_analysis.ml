@@ -122,6 +122,10 @@ let check_return_code stmt ls =
        | None -> true
     ) ls
 
+let update_return callstack stmt state =
+  let ls = check_return_code stmt state.lockset in
+  {state with lockset = ls}
+
 (* ==== Precondition refinement ==== *)
 
 (* Locks should not refer to local or formal variable -- this can be case when not using EVA *)
@@ -427,6 +431,7 @@ module Analysis = CFA_analysis.Make
 
       let analyse_stmt = analyse_stmt
       let analyse_call = analyse_call
+      let update_return = update_return
       let check_guard = check_guard
 
       module Refinement = struct

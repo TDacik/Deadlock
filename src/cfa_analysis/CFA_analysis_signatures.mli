@@ -92,7 +92,9 @@ module type ANALYSIS = sig
   val analyse_stmt : Callstack.t -> Cil_types.stmt -> State.t -> (State.t list * Results.t)
   
   val analyse_call : Callstack.t -> Cil_types.stmt -> State.t -> call_analysis
-  
+ 
+  val update_return : Callstack.t -> Cil_types.stmt -> State.t -> State.t
+
   val check_guard : Cil_types.stmt -> Cil_types.exp -> State.t -> bool_with_unknown
 
   val function_entry : Callstack.t -> State.t -> State.t
