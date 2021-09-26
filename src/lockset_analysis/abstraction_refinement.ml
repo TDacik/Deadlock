@@ -54,8 +54,10 @@ let rec extract bases state =
   | None -> Cvalue.Model.empty_map
 
 let extract_minimal_context stmt binding context =
-    let base = List.hd (Cvalue.V.fold_bases (fun b acc -> b :: acc) binding []) in
-    extract [base] context
+  let bases = Cvalue.V.fold_bases (fun b acc -> b :: acc) binding [] in
+  match bases with
+  | base :: _ -> extract [base] context
+  | _ -> Cvalue.Model.empty_map
   
 let rec find_binding_ callstack formal_param formal_param_list =
   let top_call, callsite = Callstack.top_call callstack in
@@ -103,12 +105,20 @@ let create_calling_context fn callsite =
        else acc
     ) Cvalue.Model.empty_map formals
 
+let get_top_guard_exprs callstack =
+  let fn = Callstack.top_call_fn callstack in
+  CFG_utils.all_stmts_in_fn_predicate Statement_utils.is_guard fn
+  |> List.map Statement_utils.guard_to_condition
+
 (* Extract non-locks pure inputs of function at callsite *)
-let extract_pure_inputs fn callsite =
+let extract_pure_inputs callstack =
+  let fn, callsite = Callstack.top_call callstack in
   let context = create_calling_context fn callsite in
+  let guards = get_top_guard_exprs callstack in
   let pure_vars =
-    Cvalue.Model.fold (fun b _ acc -> b :: acc) (Option.get @@ lmap_to_map context) []               
+    Cvalue.Model.fold (fun b _ acc -> b :: acc) (Option.get @@ lmap_to_map context) []           
     |> List.map Base.to_varinfo
     |> List.filter (fun v -> not @@ Concurrency_model.is_lock_type_rec v.vtype)
+    |> List.filter (fun v -> List.exists (Cil.appears_in_expr v) guards)
   in
   pure_vars, context

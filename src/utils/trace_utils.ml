@@ -150,6 +150,11 @@ module Callstack = struct
     | [] -> raise Empty_callstack
     | _ :: stack -> stack
 
+  let rec top_guards = function
+    | [] -> raise Empty_callstack
+    | Guard (s, p) :: t -> (s, p) :: top_guards t
+    | _ -> []
+
   let rec mem_call callstack call = match callstack with
     | Action _ :: t -> mem_call t call
     | Guard _ :: t -> mem_call t call
@@ -281,6 +286,11 @@ end
 module Edge_trace = struct
 
   type t = Callstack.t * Callstack.t
+
+  let compare (cs1, cs2) (cs1', cs2') =
+    let aux = Callstack.compare cs1 cs1' in
+    if aux <> 0 then aux
+    else Callstack.compare cs2 cs2'
 
   let get_callstacks (cs1, cs2) = (cs1, cs2)
 

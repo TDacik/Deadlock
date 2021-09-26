@@ -26,6 +26,8 @@ let all_stmts_predicate predicate =
       with Kernel_function.No_Definition -> acc
     ) []
 
+let all_stmts_in_fn_predicate predicate fn = List.filter predicate fn.sallstmts
+
 (** Return all functions matching predicate *)
 let all_fundecs_predicate predicate =
   Globals.Functions.fold

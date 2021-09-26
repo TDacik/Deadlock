@@ -10,6 +10,10 @@ open Trace_utils
 val all_stmts_predicate : (Cil_types.stmt -> bool) -> Cil_types.stmt list
 (** Return all (possible unreachable) program statements satisfying given predicate. *)
 
+val all_stmts_in_fn_predicate : 
+  (Cil_types.stmt -> bool) -> Cil_types.fundec -> Cil_types.stmt list
+(** Return all (possible unreachable) program statements satisfying given predicate. *)
+
 val all_fundecs_predicate : (Kernel_function.t -> bool) -> Cil_types.fundec list
 (** Return all functions satisfying given predicate. *)
 

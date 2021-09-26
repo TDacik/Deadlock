@@ -61,6 +61,10 @@ let find_functions pred =
       else acc
     ) []
 
+let is_guard stmt = match stmt.skind with
+  | If _ | Switch _ -> true
+  | _ -> false
+
 let guard_to_condition stmt = match stmt.skind with
   | If (exp, _, _, _) -> exp
   | Switch (exp, _, _, _) -> exp

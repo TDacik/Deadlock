@@ -70,6 +70,8 @@ module Callstack : sig
 
   val top_call : t -> Cil_types.fundec * Cil_types.stmt
 
+  val top_guards : t -> (Cil_types.stmt * path_taken) list
+
   val get_action : t -> Cil_types.stmt * string
 
   val get_action_stmt : t -> Cil_types.stmt
@@ -90,6 +92,8 @@ end
 module Edge_trace : sig
   
   type t = Callstack.t * Callstack.t
+  
+  val compare : t -> t -> int
 
   val create : Callstack.t -> Callstack.t -> t
 

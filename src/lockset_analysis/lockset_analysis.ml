@@ -141,7 +141,7 @@ let can_be_refined callstack fn states results =
   if Stmt.equal Cil.dummyStmt callsite then false
   else  
     let lock_params = Concurrency_model.fn_lock_params fn in
-    let path_params, _ = extract_pure_inputs fn callsite in
+    let path_params, _ = extract_pure_inputs callstack in
     lock_params <> [] 
     || path_params <> []
 
@@ -158,17 +158,11 @@ let refine_lock_params callstack params =
        (params @ params', Cvalue.Model.merge context context')
     ) ([], Cvalue.Model.empty_map) params
 
-(* Refine function that is sensitive to non-lock parameter *)
-let refine_pure_inputs fn callsite state =
-  let vars, context = extract_pure_inputs fn callsite in
-  let context = Cvalue.Model.merge state.context context in
-  {state with context = context} 
-
 let refine_entry_state callstack state =
   let fn, callsite = Callstack.top_call callstack in
   let lock_params = Concurrency_model.fn_lock_params fn in
   let lock_params, lock_state = refine_lock_params callstack lock_params in
-  let path_params, path_state = extract_pure_inputs fn callsite in
+  let path_params, path_state = extract_pure_inputs callstack in
   let state = update_function_status state lock_params path_params in
   {state with context = 
                 Cvalue.Model.merge lock_state path_state

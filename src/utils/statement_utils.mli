@@ -17,6 +17,8 @@ val call_params : Cil_types.stmt -> Cil_types.exp list
 
 val nth_call_param : Cil_types.stmt -> int -> Cil_types.exp
 
+val is_guard : Cil_types.stmt -> bool
+
 val guard_to_condition : Cil_types.stmt -> Cil_types.exp
 
 val is_exit_point : Cil_types.stmt -> bool
