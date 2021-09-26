@@ -32,6 +32,8 @@ module Callstack : sig
   (** compare_abstr with_action n cs1 cs2 compare prefixes of length n
       and possibly the action stmt. *)
 
+  val equal_abstr : ?with_action_stmt:bool -> int -> t -> t -> bool
+
   (** {2 Callstack } *)
 
   val empty : t
@@ -77,13 +79,19 @@ module Callstack : sig
   val get_action_stmt : t -> Cil_types.stmt
 
   (* TODO *)
+  val bottom : t -> event
+  
   val get_bottom_stmt : t -> Cil_types.stmt
 
   val get_thread : t -> Thread.t
 
   val set_thread : Thread.t -> t -> t
 
+  val remove_prefix : t -> t -> t
+
   (** {2 Pretty-printers } *)
+
+  val to_string : t -> string
 
   val pp : Format.formatter -> t -> unit
 

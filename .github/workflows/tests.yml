@@ -27,3 +27,9 @@ jobs:
       
       - name : install-deadlock
         run : docker build .github/workflows/.
+
+      - name : unit-tests
+        run : make unit-tests
+
+      - name : tests
+        run : make test

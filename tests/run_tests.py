@@ -85,3 +85,8 @@ if __name__ == "__main__":
     print_err("  ERR: " + str(results_cil["err"]))
     print_todo_works("  TODO_OK: " + str(results_cil["todo_ok"]))
     print_todo("  TODO_ERR: " + str(results_cil["todo_err"]))
+
+    if results_eva["err"] > 0 or results_cil["err"] > 0:
+        exit(1)
+    
+    exit(0)
