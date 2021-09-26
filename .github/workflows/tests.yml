@@ -18,18 +18,19 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: tdacik/deadlock_dependencies
+    runs-on: ubuntu_latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
+    
       - name : install-deadlock
-        run : make -C Deadlock setup; make -C Deadlock; make -C Deadlock install
+        run : |
+          echo /home/opam/.opam/4.12/bin >> $GITHUB_PATH
+          docker build .github/workflows/.
 
       - name : unit-tests
         run : make unit-tests
 
       - name : tests
-        run : make test
+        run : make test Build and install Deadlock  
