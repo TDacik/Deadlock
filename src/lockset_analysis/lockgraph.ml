@@ -11,7 +11,7 @@ open Trace_utils
 
 module Lock_order_edge = struct
   type t = Edge_trace.t list
-  let compare = Stdlib.compare
+  let compare = List.compare Edge_trace.compare
   let default = []
 end
 
