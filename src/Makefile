@@ -18,6 +18,7 @@ PLUGIN_BASE_EXTRA_DIRS = concurrency_model \
 UNIT_TESTS_EXTRA_DIRS = unit_tests \
 						unit_tests/lockset_analysis \
 						unit_tests/eva_wrapper \
+						unit_tests/cfa_analysis \
 						unit_tests/utils
 
 PLUGIN_CMI = utils/monomorphic_map \
@@ -33,6 +34,7 @@ UNIT_TESTS_CMO = unit_tests/cil_stubs \
                  unit_tests/lockset_analysis/lockset_analysis_test \
                  unit_tests/lockset_analysis/lock_types_test \
 				 unit_tests/eva_wrapper/cil_wrapper_test \
+				 unit_tests/cfa_analysis/exit_points_test \
 				 unit_tests/test_main 
 
 PLUGIN_BASE_CMO = deadlock_options \

@@ -9,6 +9,7 @@ let main () =
   | "trace_utils"      -> Trace_utils_test.run ()
   | "cfg_utils"        -> CFG_utils_test.run ()
   | "cil_wrapper"      -> Cil_wrapper_test.run ()
+  | "exit_points"      -> Exit_points_test.run ()
   | "" -> failwith "Deadlock is compiled in test-mode"
   | _  -> failwith "Unknown unit test setup";
 

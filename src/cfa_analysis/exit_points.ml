@@ -17,11 +17,11 @@ let get_cfa fn =
   |> CFA.get_automaton
   
 (** Return true, if edge has no effect *)
-let edge_has_no_effect (_, e, _) = match e.edge_transition with
-  | Skip | Return _ | Prop _ | Leave _ -> true
+let edge_has_no_effect (v, e, _) = match e.edge_transition with
+  | Skip | Return _ | Prop _ | Leave _ | Enter _ -> true
   | Instr (instr, _) -> 
     begin match instr with 
-      | Skip _ -> true 
+      | Skip _ -> true
       | _ -> false
     end
   | _ -> false
@@ -45,9 +45,18 @@ module Exit_points = Graph.Fixpoint.Make
       let analyze edge data = data && edge_has_no_effect edge
     end)
 
+let cache = ref Fundec.Map.empty
+
 let is_exit_point stmt =
   let fn = Statement_utils.find_englobing_fn stmt in
   let cfa = get_cfa fn in
   let _, vertex = Stmt.Hashtbl.find cfa.stmt_table stmt in
-  let is_exit = Exit_points.analyze (is_exit_point cfa) cfa.graph in
-  is_exit vertex
+  
+  try
+    let is_exit = Fundec.Map.find fn !cache in
+    is_exit vertex
+  
+  with Not_found ->
+    let is_exit = Exit_points.analyze (is_exit_point cfa) cfa.graph in
+    cache := Fundec.Map.add fn is_exit !cache;
+    is_exit vertex
