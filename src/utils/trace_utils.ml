@@ -166,8 +166,8 @@ module Callstack = struct
   let path_taken_to_string = function
     | Then -> "taking true branch"
     | Else -> "taking false branch"
-    | Then_nondet -> "taking true branch nondeterministically"
-    | Else_nondet -> "taking false branch nondeterministically"
+    | Then_nondet -> "taking true branch nondet."
+    | Else_nondet -> "taking false branch nondet."
 
   let event_is_guard = function
     | Guard _ -> true
