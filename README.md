@@ -56,9 +56,13 @@ void * thread2(void *v)
 ```
 
 ## Installation
-The current version is compatible with [Frama-C Vanadium](https://frama-c.com/fc-versions/vanadium.html), it's detailed installation guide can be found in [user manual](https://git.frama-c.com/pub/frama-c/blob/master/INSTALL.md).
-After installing Frama-C, clone this repository and run 
+The current version is compatible with [Frama-C Vanadium](https://frama-c.com/fc-versions/vanadium.html), it's detailed installation guide can be found in [user manual](https://git.frama-c.com/pub/frama-c/blob/master/INSTALL.md) and requires Ocaml version at least 4.12. Besides Frama-C, *Deadlock* requires following opam packages to be installed:
+```
+ounit2
+containers
+```
 
+After installing dependencies and cloning this repositary, *Deadlock* can be installed as follows:
 ```
 cd Deadlock
 make setup
