@@ -2,6 +2,12 @@ open Thread_analysis
 open Trace_utils
 open Lock_types
 
+open Cil_datatype
+
+type precondition = Thread.t * Lockset.t * Cvalue.Model.t
+
+module Stmt_summaries = Stmt_summaries
+module Function_summaries = Function_summaries
 module Results = Lockset_analysis_results
 
 val compute : Thread_graph.t -> Results.t

@@ -9,17 +9,22 @@ open Trace_utils
 
 let bound_cache = ref None
 
-let callstack_bound () = match !bound_cache with
-  | Some bound -> bound
-  | None ->
-    let fn = (fun stmt -> Conc_model.is_thread_create stmt || Conc_model.is_thread_join stmt) in
-    let bound = CFG_utils.all_stmts_predicate fn
-                |> List.map CFG_utils.max_depth
-                |> List.fold_left (fun curr_max elem -> if elem > curr_max then elem else curr_max) 0
-                |> (+) 1
-    in
-    bound_cache := Some bound;
-    bound
+let callstack_bound () = 
+  if not @@ Use_callstack_bound.get () then 1000
+  else match !bound_cache with
+    | Some bound -> bound
+    | None ->
+      let fn = (fun stmt -> Conc_model.is_thread_create stmt 
+                            || Conc_model.is_thread_join stmt
+               ) 
+      in
+      let bound = CFG_utils.all_stmts_predicate fn
+                  |> List.map CFG_utils.max_depth
+                  |> List.fold_left (fun max elem -> if elem > max then elem else max) 0
+                  |> (+) 1
+      in
+      bound_cache := Some bound;
+      bound
 
 let reduce_list callstacks =
   let bound = callstack_bound () in

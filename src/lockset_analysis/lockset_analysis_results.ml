@@ -135,15 +135,15 @@ let imprecise_fns results =
 
 (* ==== Accessors ==== *)
 
-let lockgraph results = results.lockgraph
+let get_lockgraph results = results.lockgraph
 
-let lock_stmts results = results.lock_stmts
+let get_lock_stmts results = results.lock_stmts
 
-let imprecise_lock_stmts results = results.imprecise_lock_stmts
+let get_imprecise_lock_stmts results = results.imprecise_lock_stmts
 
-let stmt_summaries results = results.stmt_summaries
+let get_stmt_summaries results = results.stmt_summaries
 
-let function_summaries results = results.function_summaries
+let get_function_summaries results = results.function_summaries
 
 (* ==== Statistics ==== *)
 

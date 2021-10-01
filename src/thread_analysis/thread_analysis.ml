@@ -108,23 +108,9 @@ module Graph_update = Gmap.Edge(Thread_graph)
 let update_graph initial_states g = match Thread_graph.nb_vertex g with
   | 1 -> g
   | _ ->
-    Self.result "Map:";
-    ChaoticIteration.M.iter
-      (fun k v -> Self.result "-((%a,%a) -> <$>)" 
-          Thread.pp k 
-          Printer.pp_fundec (Thread.get_entry_point k)
-      ) initial_states;
-    Self.result "Graph:";
-    Thread_graph.iter_edges_e
-      (fun (t1, _, t2) -> Self.result "%a -> %a" 
-          Thread.pp t1
-          Thread.pp t2
-      ) g;
     Graph_update.map
       (fun (t1, stmt, t2) ->
-         Self.result "Search for %a" Thread.pp t1;
          let t1' = Thread.update_state t1 (ChaoticIteration.M.find t1 initial_states) in
-         Self.result "Search for %a" Thread.pp t2;
          let t2' = Thread.update_state t2 (ChaoticIteration.M.find t2 initial_states) in
          (t1', stmt, t2')
       ) g
@@ -140,12 +126,6 @@ let rec graph_construction_fixpoint g_init =
   let initial_states = ChaoticIteration.recurse g_init wto init FromWto 1 in
 
   (* Update thread states *)
-  Self.result "Graph:";
-  Thread_graph.iter_edges_e
-    (fun (t1, _, t2) -> Self.result "%a -> %a" 
-        Thread.pp t1
-        Thread.pp t2
-    ) g_init;
   let g = update_graph initial_states g_init in 
 
   (* Build a new graph *)

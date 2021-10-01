@@ -205,7 +205,7 @@ let on_select menu (main_ui : Design.main_window_extension_points) ~button selec
   ()
 
 let show_lockgraph main_ui () =
-  let lockgraph = Results.lockgraph (get_results ()) in
+  let lockgraph = Results.get_lockgraph (get_results ()) in
   Dgraph_helper.graph_window_through_dot 
     ~parent: main_ui#main_window
     ~title:"Lockgraph" 
@@ -254,7 +254,7 @@ let high buffer localizable ~start ~stop =
   let buffer = buffer#buffer in
   match localizable with
   | PStmt (_, stmt) ->
-    if Cil_datatype.Stmt.Set.mem stmt (Results.imprecise_lock_stmts results) then
+    if Cil_datatype.Stmt.Set.mem stmt (Results.get_imprecise_lock_stmts results) then
       let tag = make_tag buffer "deadlock" [`BACKGROUND "red"] in
       apply_tag buffer tag start stop
   
