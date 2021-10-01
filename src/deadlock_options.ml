@@ -135,3 +135,11 @@ let () = Callstack_mode.add_update_hook
     (fun _ v -> if not @@ List.mem v ["none"; "calls"; "branching"] then 
         Kernel.abort "Option -deadlock-callstack-mode must be 'none', 'calls' or 'branching'"
     )
+
+(** Only for experiments *)
+let () = Parameter_customize.is_invisible ()
+module Use_callstack_bound = Self.True
+    (struct
+      let option_name = "-deadlock-cs-bound"
+      let help = ""
+    end)

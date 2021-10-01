@@ -12,7 +12,9 @@ open Locations
 
 module Stmts = Statement_utils
 
-let get_binding fn stmt formal_param =
+(** For function fn called at stmt return expression at this statement, that represents
+    value of formal_param *)
+let get_actual_expr fn stmt formal_param =
   let kf = Stmts.kernel_fn_from_fundec fn in
   let position = Kernel_function.get_formal_position formal_param kf in
   Stmts.nth_call_param stmt position
@@ -27,9 +29,10 @@ let lmap_to_map = function
   | Cvalue.Model.Top | Cvalue.Model.Bottom -> None 
   | Cvalue.Model.Map map -> Some map
 
+(** Base is relevant if it is statically or dynamically variable of type that contains a lock *)
 let base_is_relevant base = match base with
-  | Base.Var (var, _)  -> Concurrency_model.is_lock_type_rec var.vtype
-  | Base.Allocated _ -> true
+  | Base.Var (var, _) | Base.Allocated (var, _, _) ->
+    Concurrency_model.is_lock_type_rec var.vtype
   | _ -> false
 
 let offsetmap_to_bases map = 
@@ -59,26 +62,32 @@ let extract_minimal_context stmt binding context =
   | base :: _ -> extract [base] context
   | _ -> Cvalue.Model.empty_map
   
-let rec find_binding_ callstack formal_param formal_param_list =
-  let top_call, callsite = Callstack.top_call callstack in
-  let binding_expr = get_binding top_call callsite formal_param in
+
+let rec find_actual_lock_ callstack formal_param formal_param_list =
+  let fn, callsite = Callstack.top_call callstack in
+  
+  let expr = get_actual_expr fn callsite formal_param in
   
   (* TODO: *)
-  let variables = Cil.extract_varinfos_from_exp binding_expr in
+  let variables = Cil.extract_varinfos_from_exp expr in
   let var = Varinfo.Set.choose variables in
 
+  (* If variable is still formal, continue deeper *)
   if var.vformal then
+    let _ = Self.result "Deeper! %s in %a" var.vname Printer.pp_fundec fn in
     let callstack = Callstack.pop callstack in
     let params = var :: formal_param_list in
-    find_binding_ callstack var params
-  else
-    let value = Eva_wrapper.eval_expr_raw callsite binding_expr in
-    let context = Eva_wrapper.get_stmt_state callsite in
-    let context = extract_minimal_context callsite value context in
-    (value, context, formal_param_list)
+    find_actual_lock_ callstack var params
 
-let find_binding callstack formal_param =
-  let binding, context, formal_params = find_binding_ callstack formal_param [formal_param] in
+  (* When we find some concrete value, create a minimal context of it *)
+  else
+    let value = Eva_wrapper.eval_expr_raw callsite expr in
+    let context = Eva_wrapper.get_stmt_state callsite in
+    let minimal_context = extract_minimal_context callsite value context in
+    (value, minimal_context, formal_param_list)
+
+let find_actual_lock callstack formal_param =
+  let binding, context, formal_params = find_actual_lock_ callstack formal_param [formal_param] in
   let res = List.fold_left
       (fun acc formal ->
          let location = Locations.loc_of_varinfo formal in
@@ -87,11 +96,33 @@ let find_binding callstack formal_param =
   in
   (formal_params, res)
 
+let get_top_guard_exprs callstack =
+  let fn = Callstack.top_call_fn callstack in
+  CFG_utils.all_stmts_in_fn_predicate Statement_utils.is_guard fn
+  |> List.map Statement_utils.guard_to_condition
+
 (* ==== Extraction of pure inputs ==== *)
 
-let create_calling_context fn callsite =
+(*
+let pure_calling_state callstack =
+  let fn, callsite = Callstack.top_call callstack in
   let kf = Statement_utils.kernel_fn_from_fundec fn in
   let formals = Kernel_function.get_formals kf in
+  List.fold_left
+    (fun acc formal ->
+      
+    ) Cvalue.Model.empty_map formals
+*)
+    (*
+let extract_pure_inputs callstack =
+  let pure_calling_state = create_pure_calling_state callstack in
+  let guard_exprs = get_top_guard_exprs callstack in
+*)
+let create_calling_context callstack =
+  let fn, callsite = Callstack.top_call callstack in
+  let kf = Statement_utils.kernel_fn_from_fundec fn in
+  let formals = Kernel_function.get_formals kf in
+  let guards = get_top_guard_exprs callstack in
   List.fold_left
     (fun acc var ->
        let index = Kernel_function.get_formal_position var kf in
@@ -99,21 +130,19 @@ let create_calling_context fn callsite =
        let location = Locations.loc_of_varinfo var in
        let const = Cil.constFoldToInt expr in
        (* Add only singleton values *)
-       if Option.is_some const && not @@ Concurrency_model.is_lock_type_rec var.vtype then 
+       if Option.is_some const 
+       && not @@ Concurrency_model.is_lock_type_rec var.vtype 
+       && List.exists (Cil.appears_in_expr var) guards
+       then 
+         
          let value = Cvalue.V.inject_int (Option.get const) in
          Cvalue.Model.add_binding ~exact:true acc location value
        else acc
     ) Cvalue.Model.empty_map formals
 
-let get_top_guard_exprs callstack =
-  let fn = Callstack.top_call_fn callstack in
-  CFG_utils.all_stmts_in_fn_predicate Statement_utils.is_guard fn
-  |> List.map Statement_utils.guard_to_condition
-
 (* Extract non-locks pure inputs of function at callsite *)
 let extract_pure_inputs callstack =
-  let fn, callsite = Callstack.top_call callstack in
-  let context = create_calling_context fn callsite in
+  let context = create_calling_context callstack in
   let guards = get_top_guard_exprs callstack in
   let pure_vars =
     Cvalue.Model.fold (fun b _ acc -> b :: acc) (Option.get @@ lmap_to_map context) []           

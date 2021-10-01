@@ -55,7 +55,10 @@ let main () =
 
   Self.feedback "Deadlock analysis started";
 
-  if Use_EVA.get () then Eva_wrapper.init () else ();
+  if Use_EVA.get () 
+  then Eva_wrapper.init `EVA 
+  else Eva_wrapper.init `CIL;
+  
   Statistics.timer "Main thread";
 
   let thread_graph = Thread_analysis.compute () in
@@ -68,7 +71,7 @@ let main () =
 
   Self.result "=== Assumed threads: === \n%a" Thread_graph.pp_threads thread_graph;
 
-  Self.result "=== Lockgraph: ===\n%a" Lockgraph.pp_edges (Results.lockgraph results);
+  Self.result "=== Lockgraph: ===\n%a" Lockgraph.pp_edges (Results.get_lockgraph results);
  
   Self.feedback "==== Results: ====";
   let possible_deadlocks = Results.find_deadlocks results in
@@ -90,7 +93,9 @@ let main () =
         begin
           Self.result "Sources of imprecision of lockset analysis (functions):";
           List.iter (Self.result "- %a" Printer.pp_fundec) imprecise_fns;
-          let is = Stmt_summaries.find_imprecise_lock_stmts (Results.stmt_summaries results) in
+          let is = Stmt_summaries.find_imprecise_lock_stmts 
+              (Results.get_stmt_summaries results) 
+          in
           Self.result "Sources of imprecision of lockset analysis (stmts):";
           Stmt.Set.iter (Self.result "- %a" Printer.pp_stmt) is;
         end

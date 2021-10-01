@@ -61,15 +61,15 @@ val imprecise_fns : t -> Fundec.t list
 
 (** Accessors **)
 
-val lockgraph : t -> Lockgraph.t
+val get_lockgraph : t -> Lockgraph.t
 
-val lock_stmts : t -> Stmt.Set.t
+val get_lock_stmts : t -> Stmt.Set.t
 
-val imprecise_lock_stmts : t -> Stmt.Set.t
+val get_imprecise_lock_stmts : t -> Stmt.Set.t
 
-val stmt_summaries : t -> Stmt_summaries.t
+val get_stmt_summaries : t -> Stmt_summaries.t
 
-val function_summaries : t -> Function_summaries.t
+val get_function_summaries : t -> Function_summaries.t
 
 (** Results of lockset analysis **)
 

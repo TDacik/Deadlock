@@ -17,9 +17,14 @@ open Trace_utils
 open Function_summaries
 open Abstraction_refinement
 
+module Function_summaries = Function_summaries
+module Stmt_summaries = Stmt_summaries
 module Results = Lockset_analysis_results
+
 module Function_status = Results.Function_status
 module Stmts = Statement_utils
+
+type precondition = Thread.t * Lockset.t * Cvalue.Model.t
 
 (* Abstract state of lockset analysis *)
 module State = struct
@@ -158,7 +163,7 @@ let refine_condition callstack fn states results =
 let refine_lock_params callstack params = 
   List.fold_left
     (fun (params, context) param ->
-       let params', context' = find_binding callstack param in
+       let params', context' = find_actual_lock callstack param in
        (params @ params', Cvalue.Model.merge context context')
     ) ([], Cvalue.Model.empty_map) params
 
