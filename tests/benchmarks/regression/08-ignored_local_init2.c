@@ -14,6 +14,7 @@ pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
 int fn1()
 {
+    // Locking functions used as local inits
     int a = pthread_mutex_lock(&lock1);
     int b = pthread_mutex_lock(&lock2);
     int c = pthread_mutex_unlock(&lock2);
@@ -24,6 +25,7 @@ int fn1()
 
 int fn2()
 {
+    // Locking functions used as local inits
     int w = pthread_mutex_lock(&lock2);
     int x = pthread_mutex_lock(&lock1);
     int y = pthread_mutex_unlock(&lock1);
