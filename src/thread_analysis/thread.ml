@@ -5,6 +5,8 @@
  * Author: Tomas Dacik (xdacik00@fit.vutbr.cz), 2020 
  *)
 
+open! Deadlock_top
+
 open Print_utils
 open Cil_datatype
 
@@ -55,35 +57,28 @@ end
 type t = {
   entry_point : Cil_types.fundec;
   init_state : Thread_initial_state.t;
+  is_main : bool;
 }
 
-let create entry_point globals arg = {
+let create ?(is_main=false) entry_point globals arg = {
   entry_point = entry_point;
-  init_state = (globals, arg)
+  init_state = (globals, arg);
+  is_main = is_main;
 }
 
-let create_bottom entry_point = {
+let create_bottom ?(is_main=false) entry_point = {
   entry_point = entry_point;
-  init_state = Thread_initial_state.bottom
+  init_state = Thread_initial_state.bottom;
+  is_main = is_main;
 }
-
-exception No_main_function
 
 let dummy = create_bottom (Cil.emptyFunction "dummy")
-
-let get_main_thread () =
-  try
-    let main_kf = Globals.Functions.find_by_name "main" in
-    let main_fundec = Kernel_function.get_definition main_kf in {
-      entry_point = main_fundec;
-      init_state = (Db.Value.globals_state (), Cvalue.V.singleton_zero)
-    }
-  with Not_found -> raise No_main_function
 
 let update_state thread (globals, args) = 
   {
     entry_point = thread.entry_point;
-    init_state = (globals, args)
+    init_state = (globals, args);
+    is_main = thread.is_main;
   }
 
 (** Threads are identified and compared only using their entry points *)
@@ -105,6 +100,8 @@ let compare_states t1 t2 = Thread_initial_state.compare t1.init_state t2.init_st
 let equal_states t1 t2 = (compare_states t1 t2) = 0
 
 (* ==== Accessors ==== *)
+
+let is_main thread = thread.is_main
 
 let get_entry_point thread = thread.entry_point
 
@@ -134,10 +131,6 @@ open CCOpt
 let get_formal_arg_base thread =
   let entry_point = thread.entry_point in
   Base.of_varinfo <$> (List.nth_opt entry_point.sformals 0)
-
-let is_main thread = 
-  let entry_point = thread.entry_point in
-  entry_point.svar.vname = "main"
 
 let is_computed thread = match thread.init_state with
   | (globals, args) ->

@@ -26,12 +26,34 @@ type abstract_context = (Cil_types.varinfo * int) list
 
 let using_eva = ref false
 
-let init () =
-  Eva_wrapper.init ();
-  using_eva := true
+let main_function = ref None
+
+let _init () =
+  main_function := Some (Globals.entry_point () |> fst |> Kernel_function.get_definition)
+
+let init mode = 
+  begin match mode with
+    | `EVA -> 
+      using_eva := true;
+      Eva_wrapper.init () 
+    | `CIL -> 
+      Cil_wrapper.init ()
+  end;  
+  _init ()
 
 (* Functions determining right implementation. 
    TODO: can this be simplified? *)
+
+let get_main_fn () = Option.get !main_function
+
+let get_main_thread () =
+  let main_fn = get_main_fn () in
+  let main_kf = Stmts.kernel_fn_from_fundec main_fn in
+  let globals = 
+    if !using_eva then Db.Value.get_initial_state main_kf
+    else Cvalue.Model.bottom
+  in
+  Thread.create ~is_main:true main_fn globals Cvalue.V.singleton_zero
 
 let set_active_thread thread =
   if !using_eva then Eva_wrapper.set_active_thread thread

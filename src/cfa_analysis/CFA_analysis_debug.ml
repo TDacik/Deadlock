@@ -72,10 +72,13 @@ module Make (Printers : PRINTERS) = struct
   let debug_edge edge =
     let _, e, _ = edge in
     let label = match e.edge_transition with
+      | CFA.Skip -> "Skip"
       | CFA.Return _ -> "Return"
       | CFA.Guard _ -> "Guard"
+      | CFA.Prop _ -> "Prop"
       | CFA.Instr _ -> "Instr"
-      | _ -> "Other"
+      | CFA.Enter _ -> "Enter"
+      | CFA.Leave _ -> "Leave"
     in
     Debug.debug ~level:3 ~dkey:dk_cfa "Edge: %s %a" label pp_edge edge
 
@@ -118,7 +121,7 @@ module Make (Printers : PRINTERS) = struct
     Debug.debug ~level:3 ~dkey:dk_cfa " state: %a" pp_state state
 
   let debug_cache_hit fn states results =
-    Debug.debug ~level:3 ~dkey:dk_cfa "Leaving fn: %a with\nStates: %a\nResults: %a" 
+    Debug.debug ~level:3 ~dkey:dk_cfa "Leaving fn using cache: %a with\nStates: %a\nResults: %a" 
       pp_func fn 
       Printers.pp_states states
       Printers.pp_results results

@@ -81,7 +81,7 @@ let is_stmt_reachable_from_thread thread stmt =
 (* Construct thread graph based on information that thread can reach particular
    statement and create a child here *)
 let build_graph threads =
-  let main = Thread.get_main_thread () in
+  let main = Eva_wrapper.get_main_thread () in
   let g0 = Thread_graph.add_vertex Thread_graph.empty main in
   let create_locs = CFG_utils.all_stmts_predicate Conc_model.is_thread_create in
   List.fold_right
@@ -99,6 +99,36 @@ let build_graph threads =
            ) create_locs g
     ) threads g0
 
+module Graph_update = Gmap.Edge(Thread_graph)
+    (struct
+      include Thread_graph
+      let empty () = Thread_graph.empty
+    end)
+
+let update_graph initial_states g = match Thread_graph.nb_vertex g with
+  | 1 -> g
+  | _ ->
+    Self.result "Map:";
+    ChaoticIteration.M.iter
+      (fun k v -> Self.result "-((%a,%a) -> <$>)" 
+          Thread.pp k 
+          Printer.pp_fundec (Thread.get_entry_point k)
+      ) initial_states;
+    Self.result "Graph:";
+    Thread_graph.iter_edges_e
+      (fun (t1, _, t2) -> Self.result "%a -> %a" 
+          Thread.pp t1
+          Thread.pp t2
+      ) g;
+    Graph_update.map
+      (fun (t1, stmt, t2) ->
+         Self.result "Search for %a" Thread.pp t1;
+         let t1' = Thread.update_state t1 (ChaoticIteration.M.find t1 initial_states) in
+         Self.result "Search for %a" Thread.pp t2;
+         let t2' = Thread.update_state t2 (ChaoticIteration.M.find t2 initial_states) in
+         (t1', stmt, t2')
+      ) g
+
 let rec graph_construction_fixpoint g_init =
   
   Nb_fixpoint_iterations.inc ();
@@ -110,9 +140,13 @@ let rec graph_construction_fixpoint g_init =
   let initial_states = ChaoticIteration.recurse g_init wto init FromWto 1 in
 
   (* Update thread states *)
-  let map_bindings = ChaoticIteration.M.bindings initial_states in
-  let map_bindings2 = List.map (fun (t, state) -> (Thread.get_entry_point t, state)) map_bindings in
-  let g = Thread_graph.update map_bindings2 g_init in 
+  Self.result "Graph:";
+  Thread_graph.iter_edges_e
+    (fun (t1, _, t2) -> Self.result "%a -> %a" 
+        Thread.pp t1
+        Thread.pp t2
+    ) g_init;
+  let g = update_graph initial_states g_init in 
 
   (* Build a new graph *)
   let threads = Thread_graph.get_threads g in
@@ -127,7 +161,7 @@ let compute () =
   Nb_fixpoint_iterations.reset ();
   
   (* Initial graph with main thread only *)
-  let threads = [Thread.get_main_thread ()] in
+  let threads = [Eva_wrapper.get_main_thread ()] in
   let g0 = build_graph threads in
 
   let res = graph_construction_fixpoint g0 in

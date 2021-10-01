@@ -4,6 +4,8 @@
  * Author: Tomas Dacik (xdacik00@fit.vutbr.cz), 2020
  *)
 
+open Cil_datatype
+
 module Lock_types : sig
   
   module Lock : sig
@@ -41,8 +43,10 @@ end
 module Thread : sig
 
   type t
-
-  val create_bottom : Cil_types.fundec -> t
+  
+  val create : ?is_main:bool -> Cil_types.fundec -> Cvalue.Model.t -> Cvalue.V.t -> t
+  
+  val create_bottom : ?is_main:bool -> Cil_types.fundec -> t
 
   val compare : t -> t -> int
 
@@ -76,17 +80,17 @@ end
 
 module Eva_wrapper : sig
 
-    val init : unit -> unit
+  val init : [`EVA | `CIL] -> unit
 
-    val using_eva : bool ref
+  val using_eva : bool ref
 
-    val set_active_thread : Thread.t -> unit
+  val set_active_thread : Thread.t -> unit
 
-    val stmt_reads : Cil_types.stmt -> Locations.Zone.t
-    
-    val stmt_writes : Cil_types.stmt -> Locations.Zone.t
+  val stmt_reads : Cil_types.stmt -> Locations.Zone.t
 
-    val eval_fn_call : Cil_types.stmt -> Cil_types.exp -> Cil_types.fundec list
+  val stmt_writes : Cil_types.stmt -> Locations.Zone.t
+
+  val eval_fn_call : Cil_types.stmt -> Cil_types.exp -> Cil_types.fundec list
 
 end
 
@@ -187,6 +191,10 @@ module Trace_utils : sig
     val get_action_stmt : t -> Cil_types.stmt
 
     val pp : Format.formatter -> t -> unit
+  
+    val cut_prefix : Cil_types.fundec -> t -> t
+
+    val concat : t -> t -> t
 
   end
 
@@ -209,11 +217,36 @@ end
 
 module Lockset_analysis : sig
 
+  open Lock_types
+
+  type precondition = Thread.t * Lockset.t * Cvalue.Model.t
+
+  module Stmt_summaries : sig
+
+    include Monomorphic_map.S with type key = Stmt.t * precondition
+
+    val union : t -> t -> t
+
+  end
+  
+  module Function_summaries : sig
+    
+    include Monomorphic_map.S with type key = Fundec.t * precondition
+    
+    val union : t -> t -> t
+  
+  end
+
   module Results : sig
 
     type t
-
     val empty : t
+
+    val get_lockgraph : t -> Lockgraph.t
+    val get_lock_stmts : t -> Stmt.Set.t
+    val get_imprecise_lock_stmts : t -> Stmt.Set.t
+    val get_stmt_summaries : t -> Stmt_summaries.t
+    val get_function_summaries : t -> Function_summaries.t
 
     val stmt_must_lockset : Cil_types.stmt -> t -> Lock_types.Lockset.t
     val stmt_may_lockset : Cil_types.stmt -> t -> Lock_types.Lockset.t
@@ -221,11 +254,6 @@ module Lockset_analysis : sig
     val stmt_may_acquire : Cil_types.stmt -> t -> Lock_types.Lockset.t
   
   end
-
-  (*
-  val possible_locks_from_exp : 
-    Cil_types.stmt -> Cil_types.exp -> Trace_utils.Callstack.t -> Lock_types.Lockset.t
-  *)
 
   val compute : Thread_analysis.Thread_graph.t -> Results.t 
 

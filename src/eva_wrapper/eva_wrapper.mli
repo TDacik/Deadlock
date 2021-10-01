@@ -14,8 +14,14 @@
 open Trace_utils
 open Eva_wrapper_sig
 
+val get_main_fn : unit -> Cil_types.fundec
+
+val get_main_thread : unit -> Thread.t
+
 include EVA_WRAPPER
 (** Basic functionality of wrapper*)
+
+val init : [`EVA | `CIL] -> unit
 
 (** {2 Functions build on top of basic wrapper functionality} *)
 

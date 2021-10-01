@@ -25,17 +25,14 @@ end
 
 type t
 
-val create : Cil_types.fundec -> Cvalue.Model.t -> Cvalue.V.t -> t
+val create : ?is_main:bool -> Cil_types.fundec -> Cvalue.Model.t -> Cvalue.V.t -> t
 (** [create fn globals arg] creates thread with entry point [fn] and initial state
     ([globals], [args]) *)
 
-val create_bottom : Cil_types.fundec -> t
+val create_bottom : ?is_main:bool -> Cil_types.fundec -> t
 (** Create thread with bottom initial state *)
 
 val dummy : t
-
-val get_main_thread : unit -> t
-(** Create representation of the main thread *)
 
 val compare : t -> t -> int
 (** Compare entry points *)
@@ -54,10 +51,10 @@ val equal_states : t -> t -> bool
 val compare_states : t -> t -> int
 (** Comparion based on initial states only *)
 
+val is_main : t -> bool
+
 val is_computed : t -> bool
 (** @return false when globals or arg is bottom *)
-
-val is_main : t -> bool
 
 val get_entry_point : t -> Cil_types.fundec
 

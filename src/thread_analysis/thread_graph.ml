@@ -5,6 +5,8 @@
  * Author: Tomas Dacik (xdacik00@fit.vutbr.cz), 2020 
  *)
 
+open! Deadlock_top
+
 open Graph
 open Callgraph
 open Cil_types
@@ -40,26 +42,6 @@ let equal g1 g2 =
   Vertex_set.equal v1 v2 && Edge_set.equal e1 e2
 
 let hash = Hashtbl.hash
-
-(* ==== Update of thread initial states ==== *)
-
-module Graph_update = Gmap.Edge(G)
-    (struct
-      include G
-      let empty () = G.empty
-    end)
-
-let update states g = match nb_vertex g with
-  | 1 -> g
-  | _ ->
-    Graph_update.map
-      (fun (t1, stmt, t2) ->
-         let state1 = List.assoc (Thread.get_entry_point t1) states in 
-         let t1' = Thread.update_state t1 state1 in
-         let state2 = List.assoc (Thread.get_entry_point t2) states in 
-         let t2' = Thread.update_state t2 state2 in
-         (t1', stmt, t2')
-      ) g
 
 (* ==== Accessors ==== *)
 
