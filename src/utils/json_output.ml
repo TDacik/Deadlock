@@ -94,7 +94,7 @@ let deadlock_list deadlocks =
 
 let concurrency_check (stats : Statistics.t) =
   [
-    "Callstack prefix bound",   `Int (Happend_before.callstack_bound ());
+    "Callstack bound",          `Int (Happend_before.callstack_bound ());
     "Non-concurrent deadlocks", `Int stats.nonc_deadlocks;
     "Total",                    `Int stats.nonc_total;
     "Before create",            `Int stats.nonc_before_create;
@@ -112,7 +112,7 @@ let lockgraph locksets =
          `String (Lock.to_string lock2);
          `Assoc ["count", `Int (List.length traces)];
        ] :: acc
-    ) (Results.lockgraph locksets) []
+    ) (Results.get_lockgraph locksets) []
 
 let times (stats : Statistics.t) =
   [
