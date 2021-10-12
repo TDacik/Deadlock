@@ -172,7 +172,7 @@ module Trace_utils : sig
 
     val mem_call : t -> Cil_types.fundec -> bool
 
-    val pop : t -> t
+    val pop_call : t -> t
 
     val push_thread_entry : Thread.t -> t
 

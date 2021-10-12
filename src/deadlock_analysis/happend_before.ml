@@ -47,14 +47,15 @@ let rec happend_before_ callstack1 callstack2 = match callstack1, callstack2 wit
     let stmt1 = Callstack.top_stmt callstack1 in
     let stmt2 = Callstack.top_stmt callstack2 in
     if Stmt.equal stmt1 stmt2
-    then happend_before_ (Callstack.pop callstack1) (Callstack.pop callstack2)
+    then happend_before_ (Callstack.pop_call callstack1) (Callstack.pop_call callstack2)
     else stmt_precedes stmt1 stmt2
 
+(* TODO: after changing behaviour of pop, removal of guards is not necessary *)
 let happend_before callstack1 callstack2 =
   let thread1 = Callstack.get_thread callstack1 in
   let thread2 = Callstack.get_thread callstack2 in
   if Thread.equal thread1 thread2 then
-    let cs1 = Callstack.remove_guards callstack1 |> List.rev |> Callstack.pop in
-    let cs2 = Callstack.remove_guards callstack2 |> List.rev |> Callstack.pop in
+    let cs1 = Callstack.remove_guards callstack1 |> List.rev |> Callstack.pop_call in
+    let cs2 = Callstack.remove_guards callstack2 |> List.rev |> Callstack.pop_call in
     happend_before_ cs1 cs2
   else false

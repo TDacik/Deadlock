@@ -119,6 +119,14 @@ module Callstack = struct
 
   let top_call callstack = (top_call_fn callstack, top_call_stmt callstack)
 
+  (** Remove top call and all guards above it *)
+  let rec pop_call callstack = match callstack with
+    | [] -> raise Empty_callstack
+    | Call _ :: t -> t
+    | Thread_entry _ :: _ -> []
+    | Guard _ :: t -> pop_call t
+    | Action _ :: t -> pop_call t
+
   let get_thread callstack = match bottom callstack with
     | Thread_entry thread -> thread
     | _ -> raise (Invalid_callstack "No thread")
@@ -147,10 +155,6 @@ module Callstack = struct
     | [] -> raise Empty_callstack
     | Action (stmt, _) :: _ -> stmt
     | _ -> raise Incomplete_callstack
-
-  let pop callstack = match callstack with
-    | [] -> raise Empty_callstack
-    | _ :: stack -> stack
 
   let rec top_guards = function
     | [] -> raise Empty_callstack
@@ -233,7 +237,6 @@ module Callstack = struct
     | event :: cs -> event :: remove_guards cs
     | _ -> raise (Invalid_callstack "")
   
-
   (** Auxiliary manipulation functions **)
 
   let concat callstack1 callstack2 = callstack1 @ callstack2

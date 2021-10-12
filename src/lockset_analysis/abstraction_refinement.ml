@@ -74,7 +74,7 @@ let rec find_actual_lock_ callstack formal_param formal_param_list =
 
   (* If variable is still formal, continue deeper *)
   if var.vformal then
-    let callstack = Callstack.pop callstack in
+    let callstack = Callstack.pop_call callstack in
     let params = var :: formal_param_list in
     find_actual_lock_ callstack var params
 

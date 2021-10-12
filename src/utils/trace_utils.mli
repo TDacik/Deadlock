@@ -46,7 +46,8 @@ module Callstack : sig
 
   val push_action : Cil_types.stmt -> string -> t -> t
 
-  val pop : t -> t
+  val pop_call : t -> t
+  (** Remove the top call on the callstack and all guards above it. *)
 
   val is_empty : t -> bool
 
