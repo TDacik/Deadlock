@@ -50,7 +50,7 @@ let eval_expr_raw stmt expr =
        Cvalue.V.add base Ival.top acc
     ) Cvalue.V.bottom bases
 
-let get_stmt_state _ = Cvalue.Model.top
+let get_stmt_state ?(after=false) _ = Cvalue.Model.top
 
 (* TODO: Find all functions that are assigned in program *)
 let eval_fn_pointer stmt expr = []

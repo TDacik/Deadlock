@@ -3,6 +3,8 @@
  * Author: Tomas Dacik (xdacik00@fit.vutbr.cz), 2020
  *)
 
+open! Deadlock_top
+
 open Locations
 open Cil_types
 
@@ -81,7 +83,7 @@ let eval_expr stmt expr =
   let state = eval_expr_raw stmt expr in
   simplify_state state
 
-let get_stmt_state stmt = Db.Value.get_stmt_state stmt
+let get_stmt_state ?(after=false) stmt = Db.Value.get_stmt_state ~after stmt
 
 let eval_fn_pointer stmt expr =
   let kfs = Db.Value.call_to_kernel_function stmt in

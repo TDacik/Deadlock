@@ -71,10 +71,11 @@ module Retvals = Self.False
       let help = "Heuristic to remove locks in branches where locking operations failled."
     end)
 
-module Do_caching = Self.True
+let () = Parameter_customize.is_invisible ()
+module Use_summaries = Self.True
     (struct
-      let option_name = "-deadlock-caching"
-      let help = "Perform caching (option \"no\" is experimental)"
+      let option_name = "-deadlock-use-summaries"
+      let help = "Use function summaries to speed-up analysis."
     end)
 
 module Do_refinement = Self.True

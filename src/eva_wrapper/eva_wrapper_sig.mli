@@ -26,7 +26,7 @@ module type EVA_WRAPPER = sig
   val eval_expr_raw : Cil_types.stmt -> Cil_types.exp -> Cvalue.V.t
   (** Evaluate expression without any simplifications *)
   
-  val get_stmt_state : Cil_types.stmt -> Cvalue.Model.t
+  val get_stmt_state : ?after:bool -> Cil_types.stmt -> Cvalue.Model.t
   
   val eval_fn_pointer : Cil_types.stmt -> Cil_types.exp -> Cil_types.fundec list
 

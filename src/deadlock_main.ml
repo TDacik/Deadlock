@@ -16,12 +16,6 @@ module Results = Lockset_analysis.Results
 module Thread_graph = Thread_analysis.Thread_graph
 
 let init () =
-  (* Set EVA parameters *)
-  let eva_verbose = match Self.Verbose.get () with
-    | 0 -> 0
-    | n -> n - 1
-  in
-  Dynamic.Parameter.Int.set "-eva-verbose" eva_verbose;
 
   (* Load concurrency model *)
   let path = match Conc_model_param.get () with
@@ -104,7 +98,7 @@ let main () =
 
   if List.length possible_deadlocks <> List.length deadlocks then begin
     Concurrency_check.Nb_deadlocks.inc ();
-    Self.result "Lock order violation found, rerun with x for mor info"
+    Self.result "Lock order violation found, rerun with -deadlock-no-conc-check for mor info"
   end
   else ();
  

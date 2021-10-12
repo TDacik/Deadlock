@@ -123,6 +123,8 @@ module Callstack = struct
     | Thread_entry thread -> thread
     | _ -> raise (Invalid_callstack "No thread")
 
+  let get_thread_entry_point callstack = Thread.get_entry_point @@ get_thread callstack
+
   let set_thread thread callstack = match List.rev callstack with
     | [] -> push_thread_entry thread
     | _ :: rest -> (Thread_entry thread :: rest) |> List.rev

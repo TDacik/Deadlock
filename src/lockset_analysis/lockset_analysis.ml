@@ -407,7 +407,7 @@ module Analysis = CFA_analysis.Make
         
         let find fn state callstack (cache : t) =
           let thread = Callstack.get_thread callstack in
-          if not @@ Do_caching.get () then raise Not_found
+          if not @@ Use_summaries.get () then raise Not_found
           else
             let pre = State.to_precondition state in
             Function_summaries.find (fn, pre) cache
@@ -456,12 +456,15 @@ module Analysis = CFA_analysis.Make
 
       (** After analysis of function is finished, copy its function summary
           to summary of its callsite *)
-      let function_exit fn callsite state states results =
-        let pre = State.to_precondition state in
-        let lss = locksets states in
-        let summary = Stmt_summaries.add (callsite, pre) lss results.stmt_summaries in
-        let states = List.map (post_refine_universal fn) states in
-        (states, {results with stmt_summaries = summary})
+      let function_exit callstack state states results =
+        try
+          let fn, callsite = Callstack.top_call callstack in
+          let pre = State.to_precondition state in
+          let lss = locksets states in
+          let summary = Stmt_summaries.add (callsite, pre) lss results.stmt_summaries in
+          let states = List.map (post_refine_universal fn) states in
+          (states, {results with stmt_summaries = summary})
+         with Callstack.Invalid_callstack _ -> (states, results)
 
       (** After analysis is finished, add computed function summaries to results. *)
       let post_process states results _ function_summaries = 

@@ -101,10 +101,8 @@ module type ANALYSIS = sig
   (** Hook on function entry. This function is NOT called when summary of a function is
       used insted of its analysis. *)
 
-  (* TODO: *)
   val function_exit :
-    Cil_types.fundec -> Cil_types.stmt -> State.t -> State.t list -> Results.t
-    -> (State.t list * Results.t)
+    Callstack.t -> State.t -> State.t list -> Results.t -> (State.t list * Results.t)
    (** Hook on function exit *)
 
   module Strategy : sig

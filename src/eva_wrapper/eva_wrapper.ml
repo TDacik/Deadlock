@@ -71,9 +71,9 @@ let eval_expr_raw stmt expr =
   if !using_eva then Eva_wrapper.eval_expr_raw stmt expr
   else Cil_wrapper.eval_expr_raw stmt expr
 
-let get_stmt_state stmt =
-  if !using_eva then Eva_wrapper.get_stmt_state stmt
-  else Cil_wrapper.get_stmt_state stmt
+let get_stmt_state ?(after=false) stmt =
+  if !using_eva then Eva_wrapper.get_stmt_state ~after stmt
+  else Cil_wrapper.get_stmt_state ~after stmt
 
 let eval_thread thread =
   if !using_eva then Eva_wrapper.simplify_state (Thread.get_args thread)

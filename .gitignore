@@ -26,6 +26,7 @@ setup.log
 
 # Frama-c generated files
 Deadlock.check_mli_exists
+.Makefile.plugin.generated
 META.frama-c-deadlock
 top
 gui

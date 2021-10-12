@@ -73,6 +73,7 @@ module Callstack : sig
   val top_call : t -> Cil_types.fundec * Cil_types.stmt
 
   val top_guards : t -> (Cil_types.stmt * path_taken) list
+  (** Return all guards in the current function *)
 
   val get_action : t -> Cil_types.stmt * string
 
@@ -84,6 +85,8 @@ module Callstack : sig
   val get_bottom_stmt : t -> Cil_types.stmt
 
   val get_thread : t -> Thread.t
+
+  val get_thread_entry_point : t -> Cil_types.fundec
 
   val set_thread : Thread.t -> t -> t
 

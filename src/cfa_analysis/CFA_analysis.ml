@@ -286,7 +286,7 @@ module Make (Analysis : ANALYSIS) = struct
         let entry, states, cache, results = analyse_fn callstack callsite fn state cache in
         let cache = Fn_cache.add fn entry callstack (states, results) cache in
         let states, results =
-          Analysis.function_exit fn callsite state (States.to_list states) results in
+          Analysis.function_exit callstack state (States.to_list states) results in
         let states = States.from_list states in
         Debug.debug_fn_leave fn states results;
         (states, cache, results)
