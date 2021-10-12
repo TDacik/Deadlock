@@ -117,8 +117,6 @@ setup:
 
 	# Copy inputs for unit tests
 	cp -r unit_tests/inputs $(FRAMAC_SHARE)/deadlock
-	
-	cp -r ../models/stubs $(FRAMAC_SHARE)/deadlock
 
 
 conf-test:
