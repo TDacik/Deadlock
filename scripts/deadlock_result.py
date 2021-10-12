@@ -202,7 +202,7 @@ class DeadlockResult():
         if self.return_code == 0: return "OK"
         if self.return_code == 1: return "Compilation"
         if self.return_code == 124: return "Timeout"
-        if self.return_code == 125: return "Deadlock err" # Internal error of Deadlock
+        if self.return_code == 125: return "ERR" # Internal error of Deadlock
         return "Other"
 
     @property

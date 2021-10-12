@@ -15,15 +15,23 @@ import subprocess
 
 from abc import abstractmethod
 from utils import pretty_command
+from framac_utils import generate_main_stub
+from framac_output_parser import detect
 
 class FramacRunner():
 
-    def __init__(self, plugin, shortname, paths, timeout, options, name=None):
+    def __init__(self, plugin, shortname, paths, timeout, options, output_path=None, name=None):
         self.plugin = plugin
         self.shortname = shortname
         self.name = name if name is not None else paths[0]
+        self.output_dir = output_path
 
         self.paths = [os.path.abspath(p) for p in paths]
+        
+        # Source codes that could be included to paths. The files are stored in
+        # a dictionary source_name -> code
+        self.stubs = {}
+
         self.timeout = timeout
         self.options = options if options is not None else {}
     
@@ -32,6 +40,25 @@ class FramacRunner():
         self.stdout : str = None
         self.stderr : str = None
         self.result = None
+        
+        self.warnings = None
+
+        self.has_tmp_dir = False
+        self.tmp = None
+        self.init_directory()
+
+    def init_directory(self):
+        if self.output_dir is None:
+            tmp_dir = tempfile.TemporaryDirectory()
+            self.output_dir = tmp_dir.name
+            self.tmp = tmp_dir
+            self.has_tmp_dir = True
+
+        os.mkdir(os.path.join(self.output_dir, "stubs"))
+
+    def __del__(self):
+        if self.has_tmp_dir:
+            self.tmp.cleanup()
 
     @abstractmethod
     def set_heuristics(self):
@@ -51,6 +78,10 @@ class FramacRunner():
 
     @abstractmethod
     def postprocess_succ(self):
+        pass
+
+    @abstractmethod
+    def get_shared_dir(self):
         pass
 
     def dict_item_to_option(self, key, value):
@@ -76,17 +107,31 @@ class FramacRunner():
 
     def set_quiet(self):
         self.set_option("eva-verbose", 0)
+        self.set_option("kernel-verbose", 0)
+        self.set_option("variadic-verbose", 0)
 
-    def set_permissive(self, context_width=1, all_addresses_valid=True, arch=64):
-        """Heuristic to set EVA as permissive as possible"""
-        max_valid_int = 2**arch if all_addresses_valid else 0
+    def add_main_stub(self, n_args=5, arg_length=256):
+        """Generate a stub for main function"""
+        code = generate_main_stub(n_args, arg_length)
+
+        path = os.path.join(self.output_dir, "stubs", "main_stub.c")
+        with open(path, "w+") as f:
+            f.write(code)
+
+        # Set eva main as main function
+        self.set_option("main", "eva_main")
+        self.stubs["main_stub.c"] = code
+        self.paths.append(path)
+
+    def set_eva_heuristics(self, all_addresses_valid=True):
         options = {
+            "kernel-warn-key" : "*=inactive",
+            "eva-warn-key" : "*=inactive",
             "eva-initialized-locals" : True,
             "eva-context-valid-pointers" : True,
             "c11" : True,
             "machdep" : "x86_64",
-            "eva-context-width" : context_width,
-            #"absolute-valid-range" : f"0-{max_valid_int}"
+	    "absolute-valid-range" : "0-1000",
         }
         self.options = {**options, **self.options}
 
@@ -103,7 +148,9 @@ class FramacRunner():
 
         return: command as string
         """
+
         command = ["frama-c", "-" + self.plugin] + self.paths
+
         for key, value in self.options.items():
             command += self.dict_item_to_option(key, value)
 
@@ -125,6 +172,7 @@ class FramacRunner():
         self.store(dirname, "out", self.stdout)
         self.store(dirname, "err", self.stderr)
         self.store(dirname, "result.json", self.result.to_json())
+        self.store(dirname, "warnings.txt", self.warnings)
 
         # Create a shell script, that can reproduce results
         json_path = os.path.abspath(os.path.join(dirname, "result.json"))
@@ -132,6 +180,12 @@ class FramacRunner():
         command_gui = self.pretty_command(json_path, shebang=True, gui=True)
         self.store(dirname, "run.sh", command_cmd)
         self.store(dirname, "run-gui.sh", command_gui)
+
+        # Generate stubs
+        stubs_path = os.path.join(dirname, "stubs")
+        os.mkdir(stubs_path)
+        for path, code in self.stubs.items():
+            self.store(stubs_path, path, code)
 
         # Copy source files
         for path in self.paths:
@@ -194,6 +248,9 @@ class FramacRunner():
         with open(json_out, "w") as f:
             json.dump(data, f, indent=2)
 
+        # Use heuristics to find warnings
+        self.warnings = detect(self.stdout)
+
         # Load json file as DeadlockResult object
         data = {}
         if self.return_code == 0:
@@ -201,4 +258,3 @@ class FramacRunner():
                 data = json.load(f)
 
         self.result = self.get_result(json_out)
- 

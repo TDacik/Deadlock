@@ -118,6 +118,8 @@ setup:
 	# Copy inputs for unit tests
 	cp -r unit_tests/inputs $(FRAMAC_SHARE)/deadlock
 	
+	cp -r ../models/stubs $(FRAMAC_SHARE)/deadlock
+
 
 conf-test:
 	echo $(FRAMAC_SHARE)
@@ -132,7 +134,7 @@ unit-tests:
 test:
 	@cd ../tests; python3.9 run_tests.py
 
-simple-test:
+smoke-test:
 	frama-c -deadlock ../tests/benchmarks/simple_deadlocks/dl_2threads.c
 
 DEVELOPMENT=yes

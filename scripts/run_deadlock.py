@@ -1,8 +1,10 @@
 """Instance of FramacRunner for Deadlock plugin
 """
 
+import os
 import re
 import sys
+import subprocess
 
 from run_framac import FramacRunner
 from deadlock_result import DeadlockResult
@@ -11,6 +13,11 @@ class DeadlockRunner(FramacRunner):
 
     def __init__(self, paths, timeout=None, options=None):
         super().__init__("deadlock", "deadlock", paths, timeout, options)
+
+    def get_shared_dir(self):
+        process = subprocess.run(["frama-c-config", "-print-share-path"], capture_output=True)
+        framac_shared_dir = process.stdout.decode().strip()
+        return os.path.join(framac_shared_dir, "deadlock")
 
     def get_result(self, path):
         return DeadlockResult(path)
