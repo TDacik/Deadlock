@@ -126,7 +126,7 @@ module Ignore_self_deadlocks = Self.True
 
 module Callstack_mode = Self.String
     (struct
-      let option_name = "-callstack-mode"
+      let option_name = "-deadlock-callstack-mode"
       let arg_name = "none | calls | branching"
       let help = "How to print callstacks"
       let default = "calls"

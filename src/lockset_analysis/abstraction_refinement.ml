@@ -121,6 +121,7 @@ let create_calling_context callstack =
   let fn, callsite = Callstack.top_call callstack in
   let kf = Statement_utils.kernel_fn_from_fundec fn in
   let formals = Kernel_function.get_formals kf in
+  let pure_vars = Eva_wrapper.pure_inputs fn in
   let guards = get_top_guard_exprs callstack in
   List.fold_left
     (fun acc var ->
@@ -130,10 +131,10 @@ let create_calling_context callstack =
        let const = Cil.constFoldToInt expr in
        (* Add only singleton values *)
        if Option.is_some const 
-       && not @@ Concurrency_model.is_lock_type_rec var.vtype 
-       && List.exists (Cil.appears_in_expr var) guards
+          && not @@ Concurrency_model.is_lock_type_rec var.vtype 
+          && List.exists (Cil.appears_in_expr var) guards
+          && Base.Set.mem (Base.of_varinfo var) pure_vars
        then 
-         
          let value = Cvalue.V.inject_int (Option.get const) in
          Cvalue.Model.add_binding ~exact:true acc location value
        else acc
@@ -144,7 +145,7 @@ let extract_pure_inputs callstack =
   let context = create_calling_context callstack in
   let guards = get_top_guard_exprs callstack in
   let pure_vars =
-    Cvalue.Model.fold (fun b _ acc -> b :: acc) (Option.get @@ lmap_to_map context) []           
+    Cvalue.Model.fold (fun b _ acc -> b :: acc) (Option.get @@ lmap_to_map context) []
     |> List.map Base.to_varinfo
     |> List.filter (fun v -> not @@ Concurrency_model.is_lock_type_rec v.vtype)
     |> List.filter (fun v -> List.exists (Cil.appears_in_expr v) guards)

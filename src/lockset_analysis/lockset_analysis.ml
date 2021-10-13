@@ -355,6 +355,7 @@ let analyse_stmt callstack stmt state =
     | _ -> LocksetSet.singleton entry_ls, results
   in
   let precondition = State.to_precondition state in
+
   let stmt_summaries = Stmt_summaries.add (stmt, precondition) exit_lss Stmt_summaries.empty in
   let locksets = LocksetSet.to_list exit_lss in
   
@@ -405,11 +406,16 @@ module Analysis = CFA_analysis.Make
           let pre = State.to_precondition state in
           add (fn, pre) post cache
         
-        let find fn state callstack (cache : t) =
+        let find fn (state : State.t) callstack (cache : t) =
           let thread = Callstack.get_thread callstack in
           if not @@ Use_summaries.get () then raise Not_found
           else
-            let pre = State.to_precondition state in
+            let s =
+              if not @@ Function_status.is_normal state.function_status fn
+              then refine_entry_state callstack state
+              else state
+            in
+            let pre = State.to_precondition s in 
             Function_summaries.find (fn, pre) cache
 
         let find_and_update fn (state : State.t) callstack (cache : t) =

@@ -109,7 +109,7 @@ let pp_entry fmt (fn, pre) post =
       LocksetSet.pp lss
       (Lockgraph.nb_edges graph)
   else
-    Format.fprintf fmt "(%a, %a, %a, %a) ↦ (%a, %d)\n"
+    Format.fprintf fmt "(%a, %a, %a, {%a}) ↦ (%a, %d)\n"
       Thread.pp thread
       Printer.pp_fundec fn
       Lockset.pp ls
