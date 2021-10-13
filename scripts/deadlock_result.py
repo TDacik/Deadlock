@@ -90,7 +90,7 @@ class DeadlockResult():
 
     @property
     def nb_analysed_functions(self):
-        return self.__lockset_analysis["Analysed functions"]
+        return self.__lockset_analysis["Total function analyses"]
 
     @property
     def context_sensitive_functions(self):

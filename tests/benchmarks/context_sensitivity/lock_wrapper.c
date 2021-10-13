@@ -6,6 +6,26 @@
 //#   - lock_wrapper
 //#   - unlock_wrapper
 
+//# Nb-analysed-functions-EVA: 15
+//  + 1 main
+//  + 1 thread1
+//    + 3 lock_wrapper
+//    + 3 unlock_wrapper
+//  1 x thread2
+//    + 3 lock_wrapper
+//    + 3 unlock_wrapper
+//  -----
+//     15
+
+//# Nb-analysed-functions-CIL: 13
+//  + 1 main
+//  + 1 thread1
+//    + 3 lock_wrapper
+//    + 3 unlock_wrapper
+//  + 1 thread2
+//    + 2 lock_wrapper   (imprecise analysis + refinement, this can be optimize), then can cache
+//    + 2 unlock_wrapper                   -||-
+
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>

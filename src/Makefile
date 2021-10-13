@@ -33,6 +33,7 @@ UNIT_TESTS_CMO = unit_tests/cil_stubs \
                  unit_tests/utils/CFG_utils_test \
                  unit_tests/lockset_analysis/lockset_analysis_test \
                  unit_tests/lockset_analysis/lock_types_test \
+                 unit_tests/lockset_analysis/abstraction_refinement_test \
 				 unit_tests/eva_wrapper/cil_wrapper_test \
 				 unit_tests/cfa_analysis/exit_points_test \
 				 unit_tests/test_main 
@@ -130,7 +131,7 @@ unit-tests:
 	sh unit_tests/run.sh
 
 test:
-	@cd ../tests; python3.9 run_tests.py
+	@cd ../tests; python3.9 run_tests.py $(set)
 
 smoke-test:
 	frama-c -deadlock ../tests/benchmarks/simple_deadlocks/dl_2threads.c

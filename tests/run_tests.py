@@ -14,16 +14,16 @@ from utils import print_ok, print_err
 base_path = "benchmarks"
 
 test_suites = {
-  "Simple deadlocks"    : "simple_deadlocks",
-  "No deadlocks"        : "no_deadlocks",
-  "Thread analysis"     : "threads",
-  "Lockset analysis"    : "lockset_analysis",
-  "Context sensitivity" : "context_sensitivity",
-  "Path sensitivity"    : "path_sensitivity",
-  "Retval. heuristic"   : "retval",
-  "CFA analysis"        : "cfa_analysis",
-  "Miscellaneous"       : "misc",
-  "Regression"          : "regression",
+  "simple_deadlocks"    : "Simple deadlocks",
+  "no_deadlocks"        : "No deadlocks",
+  "threads"             : "Thread analysis",
+  "lockset_analysis"    : "Lockset analysis",
+  "context_sensitivity" : "Context sensitivity",
+  "path_sensitivity"    : "Path sensitivity",
+  "retval"              : "Retval. heuristic",
+  "cfa_analysis"        : "CFA analysis",
+  "misc"                : "Miscellaneous",
+  "regression"          : "Regression",
 }
 
 result_dir = "results"
@@ -60,9 +60,23 @@ def run_test(path, using_eva):
   except NoSpecification:
       print_err(f"Test case {test.name} missing specification")
 
+def parse_args():
+    if len(sys.argv) == 1:
+        return test_suites
+    elif len(sys.argv) == 2:
+        name = test_suites[sys.argv[1]]
+        return {sys.argv[1] : name}
+        
+    else:
+        print("Invalid number of arguments")
+        exit(1)
+
 if __name__ == "__main__":
     init()
-    for name, dirname in test_suites.items():
+
+    test_suites = parse_args()
+
+    for dirname, name in test_suites.items():
         dirpath = os.path.join(base_path, dirname)
         dirpath = os.path.abspath(dirpath)
         print(name)

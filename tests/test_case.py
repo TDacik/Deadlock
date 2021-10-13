@@ -186,6 +186,15 @@ class TestCase(DeadlockRunner):
                 "path sensitive"
             )
 
+        # Number of analysed functions can be different for -EVA and -CIL versions
+        if self.options["deadlock-use-eva"]:
+            nb_functions = self.spec["Nb-analysed-functions-EVA"]
+        else:
+            nb_functions = self.spec["Nb-analysed-functions-CIL"]
+        
+        if nb_functions is not None:
+            self.assert_n_analysed_functions(nb_functions)
+
     def verify_function_list(self, expected, actual, name):
         msg = f"""Number of {name} functions does not match. Got {actual}
                   expected {expected}."""
@@ -217,5 +226,10 @@ class TestCase(DeadlockRunner):
                      "Lockgraph size doesn´t match")
 
     def assert_n_threads(self):
-        self.assert_(self.thread_graph_size == n, "")
+        self.assert_(self.result.thread_graph_size == n, "")
+
+    def assert_n_analysed_functions(self, n):
+        actual = self.result.nb_analysed_functions
+        self.assert_(actual == n, 
+                f"Number of analysed functions ({actual}) does not match, expected {n}")
 
