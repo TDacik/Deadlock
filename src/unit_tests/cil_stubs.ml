@@ -1,19 +1,26 @@
+open Filepath
 open Cil_types
 open Cil_datatype
 
 module List = CCList
 
+(** Contruct representation of position file:line *)
+let loc_constructor file line =
+  let file = Filepath.Normalized.of_string file in
+  let position = {pos_path = file; pos_lnum = line; pos_bol = 0; pos_cnum = 0} in
+  (position, position)
+
 (* Statements *)
 
-let stmt1 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
-let stmt2 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
-let stmt3 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
-let stmt4 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
-let stmt5 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
-let stmt6 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
-let stmt7 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
-let stmt8 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
-let stmt9 = Cil.mkStmt ~valid_sid:true (Instr Cil.dummyInstr)
+let stmt1 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 1) ()
+let stmt2 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 2) ()
+let stmt3 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 3) ()
+let stmt4 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 4) ()
+let stmt5 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 5) ()
+let stmt6 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 6) ()
+let stmt7 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 7) ()
+let stmt8 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 8) ()
+let stmt9 = Cil.mkEmptyStmt ~valid_sid:true ~loc:(loc_constructor "stmt" 9) ()
 
 let stmts = [stmt1; stmt2; stmt3; stmt4; stmt5; stmt6; stmt7; stmt8; stmt9]
 let diff_stmts = List.diagonal stmts

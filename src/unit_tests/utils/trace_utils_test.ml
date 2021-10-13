@@ -46,6 +46,20 @@ let cs5 =
 let cs5_prefix = [Action (stmt1, "a2"); Call (stmt5, fn3); Call (stmt3, fn2); Call (stmt2, fn1)]
 let cs5_suffix = [Thread_entry thread1]
 
+let cs6_guards =
+  Callstack.push_thread_entry thread1
+  |> Callstack.push_call stmt2 fn1
+  |> Callstack.push_guard stmt5 Then
+  |> Callstack.push_call stmt3 fn2
+  |> Callstack.push_guard stmt6 Then
+  |> Callstack.push_guard stmt7 Then
+  |> Callstack.push_call stmt4 fn3
+  |> Callstack.push_action stmt1 "a1"
+
+let cs6_no_guards = cs4
+
+(* ==== Unit tests ==== *)
+
 let bottom_test _ =
   assert_equal_events (Callstack.bottom cs1) (Thread_entry thread1);
   assert_equal_events (Callstack.bottom cs2) (Thread_entry thread2);
@@ -62,7 +76,9 @@ let mem_call_test _ =
   assert_bool "" (Callstack.mem_call cs3 fn2);
   assert_bool "" (not @@ Callstack.mem_call cs3 fn4)
 
-let remove_guards_test _ = () 
+let remove_guards_test _ =
+  assert_equal_callstacks cs6_no_guards (Callstack.remove_guards cs6_guards);
+  assert_equal_callstacks cs5 (Callstack.remove_guards cs5)
 
 let cut_prefix_test _ =
   assert_raises Not_found (fun _ -> Callstack.cut_prefix fn1 cs1);
