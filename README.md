@@ -73,10 +73,14 @@ make install
 You may also run Deadlock in docker either by using `docker run -it tdacik/deadlock` or by running `make docker` to build an image of the most recent version.  
 
 ## Usage
-The plugin can be run by following command: 
+The simplest way to run the plugin is:
 ``` 
 frama-c -deadlock *source_files.c*
 ``` 
+For more advanced usage, see [list of command line options](https://github.com/TDacik/Deadlock/wiki/help) for tuning the analysis and [gui manual](https://github.com/TDacik/Deadlock/wiki/deadlock-gui) for visualisation of results in Frama-C's gui application.
+
+
+
 
 ## Related papers
 Dacík T. [Static Deadlock Detection in Frama-C](http://excel.fit.vutbr.cz/submissions/2020/012/12.pdf) In *Proceedings of Excel@FIT'20*. Brno University of Technology, Faculty of Information Technology. 2020
