@@ -47,7 +47,7 @@ let eval_expr_raw stmt expr =
   let bases = expr_to_zone expr |> Utils.zone_to_bases in
   List.fold_left 
     (fun acc base ->
-       Cvalue.V.add base Ival.top acc
+       Cvalue.V.add base Ival.zero acc
     ) Cvalue.V.bottom bases
 
 let get_stmt_state ?(after=false) _ = Cvalue.Model.top

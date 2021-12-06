@@ -6,38 +6,31 @@
 //#   - lock_wrapper
 //#   - unlock_wrapper
 
-//# With-eva-only: true
-
 #include <pthread.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 pthread_mutex_t lock1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
-struct s_inner
+struct s_with_lock
 {
+    int data;
     pthread_mutex_t *lock;
 };
 
-struct s_with_nested_lock
-{
-    int data;
-    struct s_inner *inner;
-};
+struct s_with_lock s1;
+struct s_with_lock s2;
 
-struct s_with_nested_lock s1;
-struct s_with_nested_lock s2;
-
-void lock_wrapper(struct s_with_nested_lock *s)
+void lock_wrapper(struct s_with_lock *s)
 {
-    pthread_mutex_lock(s->inner->lock);
+    pthread_mutex_lock(s->lock);
 }
 
-void unlock_wrapper(struct s_with_nested_lock *s)
+void unlock_wrapper(struct s_with_lock *s)
 {
-    pthread_mutex_unlock(s->inner->lock);
+    pthread_mutex_unlock(s->lock);
 }
 
 void *thread1(void *v)
@@ -63,21 +56,15 @@ void *thread2(void *v)
 int main()
 {	
     pthread_t threads[2];
-
-    s1.inner = malloc(sizeof(struct s_inner));
-    s2.inner = malloc(sizeof(struct s_inner));
-
-    if (s1.inner == NULL || s2.inner == NULL)
-        return 1;
-
-    s1.inner->lock = malloc(sizeof(pthread_mutex_t));
-    s2.inner->lock = malloc(sizeof(pthread_mutex_t));
+    
+    s1.lock = malloc(sizeof(pthread_mutex_t));
+    s2.lock = malloc(sizeof(pthread_mutex_t));
    
-    if (s1.inner->lock == NULL || s2.inner->lock == NULL)
+    if (s1.lock == NULL || s2.lock == NULL)
         return 1;
 
-    pthread_mutex_init(s1.inner->lock, NULL);
-    pthread_mutex_init(s2.inner->lock, NULL);
+    pthread_mutex_init(s1.lock, NULL);
+    pthread_mutex_init(s2.lock, NULL);
 
     pthread_create(&threads[0], NULL, thread1, NULL);
     pthread_create(&threads[1], NULL, thread2, NULL);
@@ -85,11 +72,11 @@ int main()
     pthread_join(threads[0], NULL);
     pthread_join(threads[1], NULL);
 
-    pthread_mutex_destroy(s1.inner->lock);
-    pthread_mutex_destroy(s2.inner->lock);
+    pthread_mutex_destroy(s1.lock);
+    pthread_mutex_destroy(s2.lock);
 
-    free(s1.inner);
-    free(s2.inner);
+    free(s1.lock);
+    free(s2.lock);
 
     return 0;
 }
