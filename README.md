@@ -75,7 +75,7 @@ You may also run Deadlock in docker either by using `docker run -it tdacik/deadl
 ## Usage
 The simplest way to run the plugin is:
 ``` 
-frama-c -deadlock *source_files.c*
+frama-c -deadlock source_file1.c source_file2.c ...
 ``` 
 For more advanced usage, see [list of command line options](https://github.com/TDacik/Deadlock/wiki/help) for tuning the analysis and [gui manual](https://github.com/TDacik/Deadlock/wiki/deadlock-gui) for visualisation of results in Frama-C's gui application.
 
